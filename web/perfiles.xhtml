@@ -1,0 +1,660 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--/*
+ * Licensed under the GPL License.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <title id="title">Anubis</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+        <link href="./xmlhttp/css/xp/xp.css" rel="stylesheet" type="text/css"/>
+        <link href="css/myStyle.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript">
+            function codificar(nombre)
+            {  
+                //alert(encodeURIComponent(nombre, "UTF-8"));
+                return encodeURIComponent(nombre, "UTF-8");
+                
+            }
+        </script>
+
+    </h:head>
+    <h:body>
+        
+        <div id="contenedorPopUp" ></div>
+        <h:form id="iceForm">
+            <ice:panelGrid columns="1">
+                <ice:panelGroup styleClass="panelMenu" >
+                    <ui:include src="menu.xhtml" /> 
+                </ice:panelGroup>
+                <ice:panelGroup style="position: absolute; top:70px; bottom: 30px; left: 0px; right: 0px;">
+
+                    <ice:panelPopup id="errorCapaBasePopUp" modal="true" autoCentre="true" resizable="true" visible="#{perfilbb.mostrarErrorCapaBase}">
+                        <f:facet name="header"><div class="header"><ice:outputText value="Capa Base" /><ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{perfilbb.cerrarErrorCapaBase}"></ice:commandButton></div></f:facet>
+                        <f:facet name="body">
+                            <ice:panelGroup  >             
+                                <ice:outputText value="Debe existir al menos una capa base."/> 
+                                <ice:commandButton value="Ok" action="#{perfilbb.cerrarErrorCapaBase}"></ice:commandButton>
+                            </ice:panelGroup>
+                        </f:facet>
+                    </ice:panelPopup>
+
+
+                    <!-- *********************************************************** -->
+                    <!-- ************* POP UP AGREGAR/EDITAR PERFIL **************** -->
+                    <!-- *********************************************************** -->
+
+                    <c:if test="#{perfilbb.perfilACrearEditar != null}">
+                        <ice:panelPopup id="agregarPerfilPopUp" modal="true" autoCentre="true" resizable="true" visible="#{perfilbb.modoPopUpCrearEditarPerfil != 0}" >
+                            <f:facet name="header"><div class="header"><ice:outputText value="#{perfilbb.modoPopUpCrearEditarPerfil == 1 ? 'Agregar Perfil' : 'Editar Perfil'}" /><ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{perfilbb.cancelarAgregarEditarPerfil}"></ice:commandButton></div></f:facet>
+                            <f:facet name="body">
+                                <ice:panelGroup  >             
+                                    <ice:messages id="errores" styleClass="panelErrores"/>
+                                    <ice:panelGrid columns="2">
+                                        <ice:outputText value="Nombre:"/>
+                                        <h:inputText id="perfilName" value="#{perfilbb.perfilACrearEditar.nombre}" onkeypress="if (event.keyCode == 13) document.getElementById('iceForm:agregarPerfilButton').click();"/>                                                
+                                        <ice:outputText value=""/>
+
+                                        <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                                            <ice:commandLink value="Guardar" id="guardarPerf" actionListener="#{perfilbb.aceptarAgregarEditarPerfil}" />
+                                            <ice:commandButton image="/images/Save.png" title="Guardar perfil" value="Guardar perfil" action="#{perfilbb.aceptarAgregarEditarPerfil}" ></ice:commandButton>
+                                        </h:panelGroup> 
+                                        <!--<ice:commandButton styleClass="marginleft50  groovybutton" value="Agregar" action="#{perfilbb.aceptarAgregarEditarPerfil}" />-->                                
+                                    </ice:panelGrid>                          
+                                </ice:panelGroup>
+                            </f:facet>
+                        </ice:panelPopup>
+                    </c:if>
+
+                    <!-- *********************************************************** -->
+                    <!-- ************* POP UP AGREGAR/MODIFICAR GRUPO ************** -->
+                    <!-- *********************************************************** -->
+
+                    <c:if test="#{perfilbb.perfilCapaEnCurso != null}">
+                        <ice:panelPopup id="templatePerfilPopUp" modal="true" autoCentre="true" resizable="true" visible="#{perfilbb.mostrarPopUpAgregarGrupoPerfil}" >
+                            <f:facet name="header"><div class="header"><ice:outputText value="Asignar grupo" /><ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{perfilbb.cancelarAgregarGrupoPerfil}"></ice:commandButton></div></f:facet>
+                            <f:facet name="body">
+                                <ice:panelGroup  >             
+                                    <ice:messages id="erroresGrupo" styleClass="panelErrores"/>
+                                    <ice:panelGrid columns="2">
+                                        <ice:outputText value="Grupo:"/>
+                                        <h:inputText id="perfilGrupo" value="#{perfilbb.perfilCapaEnCurso.grupo}" onkeypress="if (event.keyCode == 13) document.getElementById('iceForm:guardarGrupo').click();"/>                                                
+
+                                    </ice:panelGrid> 
+
+                                    <p class="iceOutTxt"><b>Formato:</b> Los grupos pueden ser individuales 'Grupo 1' <br/>
+                                        o se pueden anidar utilizando la siguiente notación <br/>
+                                        'Grupo 1/Grupo 2'." </p>
+
+
+                                    <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                                        <ice:commandLink value="Guardar" id="guardarGrupo" actionListener="#{perfilbb.aceptarAgregarGrupoPerfil}" />
+                                        <ice:commandButton image="/images/Save.png" title="Guardar grupo" value="Guardar grupo" action="#{perfilbb.aceptarAgregarGrupoPerfil}" ></ice:commandButton>
+                                    </h:panelGroup> 
+                                </ice:panelGroup>
+                            </f:facet>
+                        </ice:panelPopup>
+                    </c:if>
+
+
+
+                    <!-- *********************************************************** -->
+                    <!-- ************* POP UP EDITAR TEMPLATE POPUP   ************** -->
+                    <!-- *********************************************************** -->
+
+                    <c:if test="#{perfilbb.perfilCapaEnCurso != null}">
+                        <ice:panelPopup id="grupoPerfilPopUp" modal="true" autoCentre="true" resizable="true" visible="#{perfilbb.mostrarPopUpEditarTemplatePerfil}" >
+                            <f:facet name="header"><div class="header"><ice:outputText value="Editar Template" /><ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{perfilbb.cancelarEditarTemplatePopUpPerfil}"></ice:commandButton></div></f:facet>
+                            <f:facet name="body">
+                                <ice:panelGroup  >             
+                                    <ice:messages id="erroresTemplate" styleClass="panelErrores"/>
+                                    <ice:panelGrid columns="2">
+                                        <ice:outputText value="Template:"/>
+                                        <ice:panelGrid columns="1">
+                                            <h:inputTextarea id="template" value="#{perfilbb.perfilCapaEnCurso.templatePopUp}" style="width: 350px; height: 100px;"/>                                                
+                                            <ice:commandLink  id="previsualizarPopUp" value="Previsualizar" action="#{perfilbb.previsualizarPopUp}" />
+                                        </ice:panelGrid>
+                                    </ice:panelGrid> 
+
+
+                                    <p class="iceOutTxt"><b>Formato:</b> Debe escribir el HTML y los campos que se escriban como <br/>
+                                        &lt;#nombre_del_campo&gt;, se remplazaran por el campo especificado. <br/>
+                                    </p>
+                                    <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                                        <ice:commandLink value="Guardar" id="guardarTemplate" actionListener="#{perfilbb.aceptarEditarTemplatePerfil}" />
+                                        <ice:commandButton image="/images/Save.png" title="Guardar grupo" value="Guardar grupo" action="#{perfilbb.aceptarEditarTemplatePerfil}" ></ice:commandButton>
+                                    </h:panelGroup> 
+                                </ice:panelGroup>
+                            </f:facet>
+                        </ice:panelPopup>
+                    </c:if>
+
+
+                    <!-- *********************************************************** -->
+                    <!-- ***************** POP UP EDITAR CAMPO ********************* -->
+                    <!-- *********************************************************** -->
+
+                    <c:if test="#{perfilbb.campoEnEdicion!= null}">
+                        <ice:panelPopup id="modificarCampoPopUp" modal="true" autoCentre="true" resizable="false" visible="#{perfilbb.modoPopUpModificarCampo != 0}" >
+                            <f:facet name="header"><div class="header">Editar Campo<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{perfilbb.cancelarEditarCampo}"></ice:commandButton></div></f:facet>
+                            <f:facet name="body">
+                                <ice:panelGroup  styleClass="marginleft15">
+                                    <ice:panelGrid columns="2">
+                                        <ice:outputText value="Nombre columna:"/>
+                                        <ice:outputText  value="#{perfilbb.campoEnEdicion.campoId.nombreColumna}"/>        
+                                        <ice:outputText value="Etiqueta:"/>                               
+                                        <ice:panelGrid columns="2">                                
+                                            <h:inputText id="etiquetaCampoToModify"  value="#{perfilbb.campoEnEdicion.etiqueta}"/> 
+                                            <span class="span">En caso de ser vacía, 
+                                                el campo no será visible.</span>
+                                        </ice:panelGrid>
+                                        <ice:outputText value="Criterio búsqueda "/>
+                                        <ice:selectOneMenu id="criterioCampoToModify" value="#{perfilbb.campoEnEdicion.criterioBusqueda}">
+                                            <c:if test="#{!perfilbb.campoAModificarNumerico}">
+                                                <f:selectItems value="#{perfilbb.criteriosDeBusquedaTexto}" />
+                                            </c:if>
+                                            <c:if test="#{perfilbb.campoAModificarNumerico}">
+                                                <f:selectItems value="#{perfilbb.criteriosDeBusquedaNumericos}" />
+                                            </c:if>
+                                        </ice:selectOneMenu>                                                                                              
+                                    </ice:panelGrid>
+
+                                    <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                                        <ice:commandLink value="Guardar" action="#{perfilbb.aceptarModificarCampo}" />
+                                        <ice:commandButton id="agregarPerfilButton" image="/images/Save.png" title="Guardar" value="Guardar" action="#{perfilbb.aceptarModificarCampo}" ></ice:commandButton>
+                                    </h:panelGroup> 
+                                </ice:panelGroup>                                           
+                            </f:facet>
+                        </ice:panelPopup> 
+                    </c:if>
+
+
+
+                    <!-- *********************************************************** -->
+                    <!-- ************** CONFIRMACIÓN ELIMINACION PERFIL ************ -->
+                    <!-- *********************************************************** -->
+
+                    <ace:confirmationDialog id="confirmDeleteDialog"
+                                            widgetVar="confirmation"
+                                            message="Está seguro que desea eliminar el Perfil seleccionado? Se eliminará toda la información asociada."
+                                            header="Borrar Perfil"
+                                            width="450"
+                                            height="190"
+                                            closable="true"
+                                            position="center">
+                        <h:panelGrid columns="2" styleClass="centeredPanelGrid">
+                            <h:commandButton id="siborrar" value="Sí" onclick="confirmation.hide()" action="#{perfilbb.eliminarPerfil}"/>
+                            <h:commandButton id="noborrar" value="No" onclick="confirmation.hide()" />
+                        </h:panelGrid>
+                    </ace:confirmationDialog>
+
+                    <ice:panelDivider id="divisorVertical"
+                                      orientation="vertical"
+                                      dividerPosition="20"
+                                      style="width: 100%; height: 100%;"
+                                      styleClass="divider">
+
+                        <f:facet name="first">
+                            <ice:panelGroup  style=" margin: 10px; height: 95%; position: relative" styleClass="divTablaPerfiles"> 
+                                <ice:panelGroup  style="margin: 0px;  position: absolute; top:0; bottom: 135px; left: 0; right: 0px;"  > 
+
+
+                                    <!-- *********************************************************** -->
+                                    <!-- ***************** TABLA DE PERFILES *********************** -->
+                                    <!-- *********************************************************** -->
+                                    <ice:dataTable value="#{perfilbb.perfiles}" var="perfil" id="tablaPerfiles" styleClass="tabla tablaPerfiles" rowClasses="myrow" width="100%">
+                                        <ice:column styleClass="columnSmall">
+                                            <f:facet name="header">
+                                                Ir
+                                            </f:facet>
+                                            <h:commandButton image="/images/Globe.png"
+                                                             alt="Ver en visualizador" title="Ver en visualizador"
+                                                             style="margin-left: 10px;"
+                                                             styleClass="boton"
+                                                             onclick="window.open('http://'+ window.location.hostname +'/geopostal/?perfil=' + codificar('#{perfil.nombre}') )"
+                                                             >
+                                            </h:commandButton>
+                                        </ice:column>
+                                        <ice:column>
+                                            <f:facet name="header">
+                                                Nombre
+                                            </f:facet>
+                                            <ice:commandLink styleClass="perfilLink" value="#{perfil.nombre}" action="#{perfilbb.seleccionarPerfil}">
+                                                <f:setPropertyActionListener target="#{perfilbb.perfilEnCurso}"
+                                                                             value="#{perfil}"/>
+                                            </ice:commandLink>
+                                        </ice:column>                                        
+                                        <ice:column styleClass="columnSmall">
+                                            <f:facet name="header">
+                                                Editar
+                                            </f:facet>
+                                            <h:commandButton image="/images/puzzle.png"
+                                                             alt="Plugins" title="Plugins"
+                                                             styleClass="boton"
+                                                             action="#{perfilbb.editarPlugin}"
+                                                             >
+                                                <f:setPropertyActionListener target="#{perfilbb.perfilEnCurso}"
+                                                                             value="#{perfil}"/>
+                                            </h:commandButton>
+                                        </ice:column>
+                                        <ice:column styleClass="columnSmall ">
+                                            <f:facet name="header">
+                                                Editar
+                                            </f:facet>
+                                            <h:commandButton image="/images/Properties.png"
+                                                             alt="Capas Base" title="Capas Base"
+                                                             styleClass="boton"
+                                                             action="#{perfilbb.editarBases}"
+                                                             >
+                                                <f:setPropertyActionListener target="#{perfilbb.perfilEnCurso}"
+                                                                             value="#{perfil}"/>
+                                            </h:commandButton>
+                                        </ice:column>
+                                        <ice:column styleClass="columnSmall divisionALaIzquierda">
+                                            <f:facet name="header">
+                                                Editar
+                                            </f:facet>
+                                            <h:commandButton image="/images/Pen16.png"
+                                                             alt="Editar" title="Editar"
+                                                             styleClass="boton"
+                                                             action="#{perfilbb.editarPerfil}"
+                                                             rendered="#{!perfil.esDefault}"
+                                                             >
+                                                <f:setPropertyActionListener target="#{perfilbb.perfilEnCurso}"
+                                                                             value="#{perfil}"/>
+                                            </h:commandButton>
+                                        </ice:column>
+                                        <ice:column styleClass="columnSmall">
+                                            <f:facet name="header">
+                                                Eliminar
+                                            </f:facet>
+                                            <h:commandButton image="/images/CancelOrange.png"
+                                                             alt="Eliminar" title="Eliminar"
+                                                             styleClass="boton"
+                                                             onclick="confirmation.show()"
+                                                             rendered="#{!perfil.esDefault}"
+                                                             >
+                                                <f:setPropertyActionListener target="#{perfilbb.perfilAEliminar}"
+                                                                             value="#{perfil}"/>
+                                            </h:commandButton>
+                                        </ice:column>
+                                    </ice:dataTable>
+                                    <ice:panelGroup styleClass="footerCapas">
+                                        <ice:commandButton image="/images/Plus.png" title="Agregar perfil" styleClass="agregarButton" value="Agregar Perfil" action="#{perfilbb.agregarPerfil}" style="vertical-align: bottom!important"></ice:commandButton>
+                                    </ice:panelGroup>
+                                </ice:panelGroup>
+
+                            </ice:panelGroup>
+
+                        </f:facet>
+
+                        <f:facet name="second">                            
+                            <c:if test="#{perfilbb.visibilidadCapas and perfilbb.verPlugins}">                                 
+                                <ice:panelGroup style="padding: 10px; height: 100%;overflow: hidden;" rendered="#{perfilbb.visibilidadCapas and perfilbb.verPlugins}">
+                                    <ice:panelGroup styleClass="header headerTabla"   style="margin-top: 5px;">
+                                        Plugins del perfil "#{perfilbb.perfilEnCurso.nombre}"
+                                    </ice:panelGroup>
+                                    <ice:dataTable value="#{perfilbb.plugins}" var="plugin" styleClass="tabla tablaConHeader">
+                                        <ice:column styleClass="columnSmall">
+                                            <f:facet name="header">
+                                                <ice:panelGroup>
+                                                    <center><ice:outputText value="Habilitar"/></center>
+                                                </ice:panelGroup>
+                                            </f:facet>
+                                            <ice:selectBooleanCheckbox value="#{plugin[0]}" partialSubmit="true" valueChangeListener="#{perfilbb.habilitacionPlugin}">
+                                                <f:attribute  name="plugin" value="#{plugin}"/>
+                                                <f:attribute name="attribute1" value="Command Link"></f:attribute>
+                                            </ice:selectBooleanCheckbox>                                              
+                                        </ice:column>
+                                        <ice:column styleClass="columnMeduim">
+                                            <f:facet name="header" >
+                                                Nombre
+                                            </f:facet>
+                                            #{plugin[1]}
+                                        </ice:column>
+                                        <ice:column>
+                                            <f:facet name="header">
+                                                Descripción
+                                            </f:facet>
+                                            #{plugin[2]}
+                                        </ice:column>                                        
+                                    </ice:dataTable>
+                                </ice:panelGroup>
+                            </c:if>
+
+                            <c:if test="#{perfilbb.visibilidadCapas and (not perfilbb.verPlugins)}">
+                                <ice:panelGroup style="padding: 10px; height: 100%;overflow: hidden;" rendered="#{perfilbb.visibilidadCapas and (not perfilbb.verPlugins)}">
+                                    <ice:panelDivider id="icePnlDvr"
+                                                      orientation="horizontal"
+                                                      dividerPosition="50"
+                                                      style="width: 100%; height: 100%; border-color: red; overflow: hidden;" styleClass="divider">
+
+                                        <f:facet name="first" >
+                                            <!-- *********************************************************** -->
+                                            <!-- ***************** TABLA DE CAPAS ************************* -->
+                                            <!-- *********************************************************** -->
+                                            <ice:panelGroup rendered="#{perfilbb.visibilidadCapas}" >
+                                                <ice:panelGroup  styleClass="header headerTabla" style="margin-top: 5px;">
+                                                    Capas de perfil "#{perfilbb.perfilEnCurso.nombre}"
+                                                </ice:panelGroup>    
+                                                <!--                                    <div stlye="clear:both;">
+                                                                                        <ice:outputLabel styleClass="h3 float" rendered="#{perfilbb.perfilEnCurso != null}" value="#{perfilbb.perfilEnCurso.nombre} - Capas"></ice:outputLabel>
+                                                                                    </div>-->
+                                                <ice:panelGroup styleClass="panelMitadIzq" style="width: 60%;">
+                                                    <ice:dataTable value="#{perfilbb.perfilEnCurso.perfilesCapasList}" var="perfilCapa" id="capasSeleccionadasTable" width="100%" styleClass="tabla tablaConHeader" rowClasses="myrow">
+                                                        <ice:column style="width: 65px; ">
+                                                            <f:facet name="header">
+                                                                Orden
+                                                            </f:facet>
+                                                            <ice:panelGroup>
+                                                                <ice:commandButton id="subirOrdenButton" action="#{perfilbb.subirOrdenCapa}" image="/images/up.png" alt="Antes" title="Antes" styleClass="botonOrden" >
+                                                                    <f:setPropertyActionListener target="#{perfilbb.capaAOrdenar}" value="#{perfilCapa}" />
+                                                                </ice:commandButton>
+                                                                <ice:commandButton id="bajarOrdenButton" action="#{perfilbb.bajarOrdenCapa}" image="/images/down.png" alt="Después" title="Después" styleClass="botonOrden" >
+                                                                    <f:setPropertyActionListener target="#{perfilbb.capaAOrdenar}" value="#{perfilCapa}"/>
+                                                                </ice:commandButton>
+                                                            </ice:panelGroup>
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Nombre
+                                                            </f:facet>
+                                                            <ice:commandLink id="perfilCapaSeleccionada" value="#{perfilCapa.nombreCapa}" action="#{perfilbb.perfilCapaSeleccionado}">
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaEnCurso}" value="#{perfilCapa}"/>
+                                                            </ice:commandLink>
+
+                                                        </ice:column>
+                                                        <ice:column  >
+                                                            <f:facet name="header">
+                                                                Tabla
+                                                            </f:facet>
+                                                            #{perfilCapa.capaId.tabla}
+                                                        </ice:column>
+                                                        <ice:column style="text-align: center;">
+                                                            <f:facet name="header" > 
+                                                                Grupo
+                                                            </f:facet>
+
+                                                            <h:commandButton id="perfilCapaGrupo" image="/images/Users.png"
+                                                                             alt="Asignar grupo" title="Asignar grupo"
+                                                                             styleClass="boton"
+                                                                             action="#{perfilbb.mostrarAgregarGrupoPerfil}"
+                                                                             >
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaEnCurso}" value="#{perfilCapa}"/>
+                                                            </h:commandButton>
+
+                                                            <ice:commandLink id="grupoNombre" value="#{perfilCapa.grupo}" action="#{perfilbb.mostrarAgregarGrupoPerfil}" style="margin-left: 10px" >
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaEnCurso}" value="#{perfilCapa}"/>
+                                                            </ice:commandLink> 
+                                                        </ice:column>
+                                                        <ice:column style="width: 65px; text-align: center;">
+                                                            <f:facet name="header">
+                                                                Template PopUp
+                                                            </f:facet>
+
+                                                            <h:commandButton id="perfilCapaTemplate" image="/images/Bubble6.png"
+                                                                             alt="Template PopUp" title="Template PopUp"
+                                                                             styleClass="boton"
+                                                                             action="#{perfilbb.mostrarEditarTemplatePopUpPerfil}"
+                                                                             >
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaEnCurso}" value="#{perfilCapa}"/>
+                                                            </h:commandButton>
+                                                        </ice:column>
+                                                        <ice:column styleClass="columnSmall">
+                                                            <f:facet name="header">
+                                                                Visible
+                                                            </f:facet>
+                                                            <ice:selectBooleanCheckbox styleClass="checkboxTabla" value="#{perfilCapa.visible}" valueChangeListener="#{perfilbb.guardarCapaEnCurso}" partialSubmit="true"/>
+                                                        </ice:column>
+                                                        <ice:column styleClass="columnSmall">
+                                                            <f:facet name="header">
+                                                                Sólo Buscar
+                                                            </f:facet>
+                                                            <ice:selectBooleanCheckbox styleClass="checkboxTabla" value="#{perfilCapa.soloBuscable}" valueChangeListener="#{perfilbb.guardarCapaEnCurso}" partialSubmit="true"/>
+                                                        </ice:column>
+                                                        <ice:column styleClass="columnSmall">
+                                                            <f:facet name="header">
+                                                                Buscable
+                                                            </f:facet>
+                                                            <ice:selectBooleanCheckbox styleClass="checkboxTabla" value="#{perfilCapa.buscable}" valueChangeListener="#{perfilbb.guardarCapaEnCurso}" partialSubmit="true"/>
+                                                        </ice:column>
+
+                                                        <!--                                                    <ice:column>
+                                                                                                                <f:facet name="header">
+                                                                                                                    Orden
+                                                                                                                </f:facet>
+                                                        #{perfilCapa.orden}
+                                                    </ice:column>-->
+                                                        <ice:column styleClass="columnSmall">
+                                                            <f:facet name="header">
+                                                                Filtros
+                                                            </f:facet>                                                           
+                                                            <h:commandButton id="perfilCapaFiltro" image="/images/Filter.png"
+                                                                             alt="Filtrar por capa" title="Filtrar por capa"
+                                                                             styleClass="boton"
+                                                                             action="#{perfilbb.editarFiltros}"
+                                                                             >
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaEnCurso}" value="#{perfilCapa}"/>
+                                                            </h:commandButton>
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Eliminar
+                                                            </f:facet>
+                                                            <ice:commandLink styleClass="perfilLink" value="Eliminar" action="#{perfilbb.eliminarCapaPerfil}" >
+
+                                                                <f:setPropertyActionListener target="#{perfilbb.perfilCapaAEliminar}"
+                                                                                             value="#{perfilCapa}"/>
+                                                            </ice:commandLink>
+                                                        </ice:column>
+
+                                                    </ice:dataTable>
+                                                </ice:panelGroup>
+                                                <ice:panelGroup  styleClass="panelMitadDer" style="width: 38%;">
+                                                    <ice:dataTable value="#{perfilbb.capasDisponibles}" var="capaDisponible" id="capasDisponiblesTable" width="100%" styleClass="tabla tablaConHeader" rowClasses="myrow">
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Nombre
+                                                            </f:facet>
+                                                            #{capaDisponible.nombre}
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Tabla
+                                                            </f:facet>
+                                                            #{capaDisponible.tabla}
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Agregar
+                                                            </f:facet>
+                                                            <ice:commandLink styleClass="perfilLink" value="Agregar" action="#{perfilbb.agregarCapaPerfil}">
+                                                                <f:setPropertyActionListener target="#{perfilbb.capaAAgregar}"
+                                                                                             value="#{capaDisponible}"/>
+                                                            </ice:commandLink>
+                                                        </ice:column>
+                                                    </ice:dataTable>
+                                                </ice:panelGroup>
+                                            </ice:panelGroup>
+                                        </f:facet>
+
+                                        <f:facet name="second">
+                                            <!-- *********************************************************** -->
+                                            <!-- ***************** TABLA DE CAMPOS ************************* -->
+                                            <!-- *********************************************************** -->
+                                            <c:if test="#{perfilbb.visibilidadCampos and !perfilbb.visibilidadFiltros}"> 
+                                                <ice:panelGroup >
+                                                    <ice:panelGroup  styleClass="header" style="margin-top: 5px;">
+                                                        Campos de capa "#{perfilbb.perfilCapaEnCurso.capaId.nombre}"
+                                                    </ice:panelGroup>
+
+                                                    <ice:panelGroup  > 
+                                                        <ice:panelGrid columns="3">
+                                                            <ice:outputText style="margin-left: 20px;" value="Campos barra de búsqueda:"/>
+                                                            <h:inputText id="perfilBusqueda" style="width:350px;" value="#{perfilbb.perfilCapaEnCurso.templateBarraBusqueda}" /> 
+                                                            <h:panelGroup style="margin-left: 20px;" styleClass="float wrapbutton" >
+                                                                <ice:commandLink value="Guardar búsqueda" id="guardarBusqueda" actionListener="#{perfilbb.aceptarBusquedaCapaPerfil}" />
+                                                                <ice:commandButton image="/images/Save.png" title="Guardar búsqueda" value="Guardar búsqueda" action="#{perfilbb.aceptarBusquedaCapaPerfil}" ></ice:commandButton>
+                                                            </h:panelGroup> 
+                                                            <!--                                                            onkeypress="if (event.keyCode == 13) document.getElementById('iceForm:guardarBarraBusqueda').click();"-->
+                                                        </ice:panelGrid> 
+
+<!--                                                        <p style="margin-left: 20px;" class="iceOutTxt"><b>Formato:</b> Debe escribir los nombres de los campos en el orden que se esperan en la búsqueda, separados por coma. </p>-->
+
+
+                                                    </ice:panelGroup>
+
+                                                    <ice:dataTable value="#{perfilbb.perfilCapaEnCurso.perfilCamposList}" var="perfilCampo" id="camposTable" styleClass="tabla tablaConHeader" rowClasses="myrow" >
+                                                        <ice:column >
+                                                            <f:facet name="header">
+                                                                Nombre de columna
+                                                            </f:facet>
+                                                            #{perfilCampo.nombreColumna}
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Etiqueta
+                                                            </f:facet>
+                                                            #{perfilCampo.etiqueta}
+                                                        </ice:column>
+                                                        <ice:column>
+                                                            <f:facet name="header">
+                                                                Criterio de búsqueda
+                                                            </f:facet>
+                                                            #{perfilCampo.criterioBusqueda}
+                                                        </ice:column>
+                                                        <ice:column style="width: 120px;">
+                                                            <f:facet name="header">
+                                                                Etiqueta resultado
+                                                            </f:facet>
+                                                            <ice:selectBooleanCheckbox styleClass="checkboxTabla" value="#{perfilCampo.etiquetaResultado}" valueChangeListener="#{perfilbb.guardarCapaEnCurso}" partialSubmit="true"/>
+                                                        </ice:column>
+                                                        <ice:column styleClass="columnSmall">
+                                                            <f:facet name="header">
+                                                                Editar
+                                                            </f:facet>
+                                                            <h:commandButton image="/images/Pen16.png"
+                                                                             alt="Editar" title="Editar"
+                                                                             styleClass="boton"
+                                                                             action="#{perfilbb.modificarCampo}"
+                                                                             >
+                                                                <f:setPropertyActionListener target="#{perfilbb.campoEnEdicion}"
+                                                                                             value="#{perfilCampo}"/>
+                                                            </h:commandButton>
+                                                        </ice:column>
+                                                    </ice:dataTable>
+                                                </ice:panelGroup>
+                                            </c:if>
+
+                                            <!-- *********************************************************** -->
+                                            <!-- ***************** TABLA DE FILTROS************************* -->
+                                            <!-- *********************************************************** -->
+                                            <c:if test="#{perfilbb.visibilidadFiltros and !perfilbb.visibilidadCampos}"> 
+                                                <ice:panelGroup >
+                                                    <ice:panelGroup  styleClass="header" style="margin-top: 5px;">
+                                                        Filtros para la capa "#{perfilbb.perfilCapaEnCurso.capaId.nombre}"
+                                                    </ice:panelGroup> 
+
+                                                    <ice:dataTable value="#{perfilbb.capasDisponiblesParaFiltro}" var="capaFiltro" id="filtrosTable" styleClass="tabla tablaConHeader" rowClasses="myrow" >
+                                                        <ice:column >
+                                                            <f:facet name="header">
+                                                                Capa
+                                                            </f:facet>
+                                                            #{capaFiltro[0]}
+                                                        </ice:column>
+                                                        <ice:column style="width: 200px;">
+                                                            <f:facet name="header">
+                                                                Usar como filtro
+                                                            </f:facet>
+                                                            <ice:selectBooleanCheckbox styleClass="checkboxTabla" value="#{capaFiltro[1]}" valueChangeListener="#{perfilbb.guardarFiltroCapa}" partialSubmit="true">
+                                                                <f:attribute  name="filtro" value="#{capaFiltro}"/>                                                
+                                                            </ice:selectBooleanCheckbox> 
+                                                        </ice:column>                                                    
+                                                    </ice:dataTable>
+                                                </ice:panelGroup>
+                                            </c:if>
+                                        </f:facet>
+                                    </ice:panelDivider>
+                                </ice:panelGroup>
+                            </c:if>
+
+                            <c:if test="#{perfilbb.visibilidadCapas and !perfilbb.verPlugins and perfilbb.visibilidadBases}">                                 
+                                <ice:panelGroup style="padding: 10px; height: 100%;overflow: hidden;" rendered="#{perfilbb.visibilidadCapas and !perfilbb.verPlugins and perfilbb.visibilidadBases}">
+
+
+                                    <ice:panelGroup styleClass="header headerTabla"   style="margin-top: 5px;">
+                                        Capas Base del perfil "#{perfilbb.perfilEnCurso.nombre}"
+                                    </ice:panelGroup>
+
+                                    <ice:dataTable value="#{perfilbb.bases}" var="base" styleClass="tabla tablaConHeader" >
+                                        <ice:column styleClass="columnSmall" id="Habilitar">
+                                            <f:facet name="header">
+                                                <ice:panelGroup>
+                                                    <center><ice:outputText value="Habilitar"/></center>
+                                                </ice:panelGroup>
+                                            </f:facet>
+                                            <ice:selectBooleanCheckbox value="#{base[0]}" partialSubmit="true" valueChangeListener="#{perfilbb.habilitacionBase}">
+                                                <f:attribute  name="base" value="#{base}"/>                                                
+                                            </ice:selectBooleanCheckbox>                                              
+                                        </ice:column>
+                                        <ice:column styleClass="columnMeduim">
+                                            <f:facet name="header">
+                                                Orden
+                                            </f:facet>
+                                            <ice:panelGroup rendered="#{base[0]}">
+                                                <ice:commandButton id="subirOrdenButton" action="#{perfilbb.subirOrdenBase}" image="/images/up.png" alt="Antes" title="Antes" styleClass="botonOrden" >
+                                                    <f:setPropertyActionListener target="#{perfilbb.baseAOrdenar}" value="#{base}"/>
+                                                </ice:commandButton>
+                                                <ice:commandButton id="bajarOrdenButton" action="#{perfilbb.bajarOrdenBase}" image="/images/down.png" alt="Antes" title="Antes" styleClass="botonOrden" >
+                                                    <f:setPropertyActionListener target="#{perfilbb.baseAOrdenar}" value="#{base}"/>
+                                                </ice:commandButton>
+                                                &nbsp;&nbsp; #{base[5]+1}
+                                            </ice:panelGroup>                                          
+                                        </ice:column> 
+                                        <!--                                        <ice:column styleClass="columnMeduim" >
+                                                                                    <f:facet name="header" >
+                                                                                        Orden
+                                                                                    </f:facet>
+                                                                                    <ice:panelGroup rendered="#{base[0]}">
+                                                                                    
+                                                                                    </ice:panelGroup>
+                                                                                </ice:column>-->
+                                        <ice:column styleClass="columnMeduim" id="et">
+                                            <f:facet name="header" >
+                                                Etiqueta
+                                            </f:facet>
+                                            #{base[1]}
+                                        </ice:column>
+                                        <ice:column>
+                                            <f:facet name="header">
+                                                Capas
+                                            </f:facet>
+                                            #{base[2]}
+                                        </ice:column>                                          
+                                    </ice:dataTable>
+                                </ice:panelGroup>
+                            </c:if>
+                        </f:facet>
+                    </ice:panelDivider>
+                </ice:panelGroup>
+            </ice:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+
+

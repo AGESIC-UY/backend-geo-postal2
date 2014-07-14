@@ -1,0 +1,506 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package backingbeans;
+
+import com.icesoft.faces.component.ext.HtmlCommandLink;
+import com.icesoft.faces.component.ext.HtmlDataTable;
+import com.icesoft.faces.component.ext.RowSelector;
+import com.icesoft.faces.component.ext.RowSelectorEvent;
+import dao.Dao;
+import dao.HibernateDao;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
+import model.Campos;
+import model.Capas;
+import model.GeometryColumns;
+
+/**
+ *
+ * @author Camila.Riveron
+ */
+@ManagedBean(name = "capas")
+@SessionScoped
+public class CapasBackingBean implements Serializable {
+
+    private List<Capas> capas;
+    private List<GeometryColumns> tablasdisponibles;
+    
+    private Boolean mostrarPopUpAgregarCapa;
+    
+    private String nombreCapa;
+    
+    private Integer lastSelectedRow;
+    private RowSelector rowselector;  
+    
+    public HtmlDataTable tablasTable;
+    public HtmlDataTable capasTabla;
+    public HtmlDataTable camposTabla;
+    
+    private boolean caseSensitive = false;
+    
+    private int maxRowsTablas;
+    private int maxRowsCapas;
+    
+    //Busqueda Tabla
+    private String busquedaTabla = "";
+    private String[] tablas_selectedColumns = new String[]{"FTableName"};
+    private int tablas_lastFoundIndex = -1;
+    
+    //Busqueda Capa
+    private String busquedaCapa = "";
+    private String[] capas_selectedColumns = new String[]{"nombre","tabla"};
+    private int capas_lastFoundIndex = -1;
+    
+    private Capas capaSeleccionada;
+    private List<Campos> camposCapaSeleccionada;
+    
+    private Capas toModify;
+    private Campos campotoModify;
+    private int toRemove;
+    private int toEdit;
+    private int campotoEdit;
+    private boolean mostrarPopUpEditarCapa;
+    private boolean mostrarPopUpEditarCampo;  
+   
+    public CapasBackingBean() {
+        try {
+            capas = HibernateDao.findAll(Capas.class.getName());
+            tablasdisponibles = getTablasDisponibles();            
+            mostrarPopUpAgregarCapa = false;
+            camposCapaSeleccionada = new ArrayList();
+            maxRowsTablas = 6;
+            maxRowsCapas = 6;
+            busquedaTabla = "";
+            toModify = new Capas();
+            campotoModify = new Campos();
+        } catch (Exception ex) {
+            Logger.getLogger(PerfilesBackingBean.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+    }
+    
+    private List<GeometryColumns> getTablasDisponibles()
+    {
+        List<GeometryColumns> all = HibernateDao.findAll(GeometryColumns.class.getName());
+        List<GeometryColumns> activas = new ArrayList();
+        for(Capas c: capas)
+        {
+            for(GeometryColumns tabla: all)
+            {
+                if(tabla.getFTableName().equals(c.getTabla()))
+                {
+                    activas.add(tabla);
+                }
+            }
+        }
+        for(GeometryColumns activa: activas)
+        {
+            all.remove(activa);
+        }
+        
+        return all;
+    }
+
+    public List<Campos> getCamposCapaSeleccionada() {
+        return camposCapaSeleccionada;
+    }
+
+    public void setCamposCapaSeleccionada(List<Campos> camposCapaSeleccionada) {
+        this.camposCapaSeleccionada = camposCapaSeleccionada;
+    }   
+    
+
+    public Campos getCampotoModify() {
+        return campotoModify;
+    }
+
+    public void setCampotoModify(Campos campotoModify) {
+        this.campotoModify = campotoModify;
+    }
+
+    public List<SelectItem> getCriteriosDeBusqueda() {
+        List<SelectItem> lista = new ArrayList<SelectItem>();
+        lista.add(new SelectItem("Like"));
+        lista.add(new SelectItem("Igual"));
+        lista.add(new SelectItem("Entre"));
+        lista.add(new SelectItem("Mayor"));
+        lista.add(new SelectItem("Menor"));
+        lista.add(new SelectItem("Exacto"));
+        lista.add(new SelectItem("Distinto"));
+        return lista;
+    }  
+
+    public Campos getCampostoModify() {       
+        return campotoModify;
+    }
+
+    public void setCampostoModify(Campos campostoModify) {
+        this.campotoModify = campostoModify;
+    }
+
+    public int getCampotoEdit() {
+        return campotoEdit;
+    }
+
+    public void setCampotoEdit(int campotoEdit) {
+        this.campotoEdit = campotoEdit;
+    }
+
+    public boolean isMostrarPopUpEditarCampo() {
+        return mostrarPopUpEditarCampo;
+    }
+
+    public void setMostrarPopUpEditarCampo(boolean mostrarPopUpEditarCampo) {
+        this.mostrarPopUpEditarCampo = mostrarPopUpEditarCampo;
+    }   
+    
+
+    public HtmlDataTable getCamposTabla() {
+        return camposTabla;
+    }
+
+    public void setCamposTabla(HtmlDataTable camposTabla) {
+        this.camposTabla = camposTabla;
+    }
+        
+    public HtmlDataTable getCapasTabla() {
+        return capasTabla;
+    }
+
+    public void setCapasTabla(HtmlDataTable capasTabla) {
+        this.capasTabla = capasTabla;
+    }
+
+    public Capas getCapaSeleccionada() {
+        return capaSeleccionada;
+    }
+
+    public void setCapaSeleccionada(Capas capaSeleccionada) {
+        this.capaSeleccionada = capaSeleccionada;
+    }  
+    
+
+    public HtmlDataTable getCapasTable() {
+        return capasTabla;
+    }
+
+    public void setCapasTable(HtmlDataTable capasTable) {
+        this.capasTabla = capasTable;
+    }
+
+    public Capas getToModify() {
+        return toModify;
+    }
+
+    public void setToModify(Capas toModify) {
+        this.toModify = toModify;
+    }
+
+    public int getToRemove() {
+        return toRemove;
+    }
+
+    public void setToRemove(int toRemove) {
+        this.toRemove = toRemove;
+    }
+
+    public int getToEdit() {
+        return toEdit;
+    }
+
+    public void setToEdit(int toEdit) {
+        this.toEdit = toEdit;
+    }
+
+    public boolean isMostrarPopUpEditarCapa() {
+        return mostrarPopUpEditarCapa;
+    }
+
+    public void setMostrarPopUpEditarCapa(boolean mostrarPopUpEditarCapa) {
+        this.mostrarPopUpEditarCapa = mostrarPopUpEditarCapa;
+    }   
+
+    public String getBusquedaCapa() {
+        return busquedaCapa;
+    }
+
+    public void setBusquedaCapa(String busquedaCapa) {
+        this.busquedaCapa = busquedaCapa;
+    }   
+    
+
+    public String getBusquedaTabla() {
+        return busquedaTabla;
+    }
+
+    public int getMaxRowsCapas() {
+        return maxRowsCapas;
+    }
+
+    public void setMaxRowsCapas(int maxRowsCapas) {
+        this.maxRowsCapas = maxRowsCapas;
+    }
+
+    public int getMaxRowsTablas() {
+        return maxRowsTablas;
+    }
+
+    public void setMaxRowsTablas(int maxRowsTablas) {
+        this.maxRowsTablas = maxRowsTablas;
+    }
+
+    public void setBusquedaTabla(String busquedaTabla) {
+        this.busquedaTabla = busquedaTabla;
+    }
+
+    public int getTablas_lastFoundIndex() {
+        return tablas_lastFoundIndex;
+    }
+
+    public void setTablas_lastFoundIndex(int tablas_lastFoundIndex) {
+        this.tablas_lastFoundIndex = tablas_lastFoundIndex;
+    }
+
+    public HtmlDataTable getTablasTable() {
+        return tablasTable;
+    }
+
+    public void setTablasTable(HtmlDataTable tablasTable) {
+        this.tablasTable = tablasTable;
+    }
+
+    public Boolean getMostrarPaginadoTablas() {
+        return tablasdisponibles.size() > maxRowsTablas;
+    }
+    
+     public Boolean getMostrarPaginadoCapas() {
+        return capas.size() > maxRowsCapas;
+    }    
+
+    public Integer getLastSelectedRow() {
+        return lastSelectedRow;
+    }
+
+    public void setLastSelectedRow(Integer lastSelectedColumn) {
+        this.lastSelectedRow = lastSelectedColumn;
+    }
+
+    public String getNombreCapa() {
+        return nombreCapa;
+    }
+
+    public void setNombreCapa(String nombreCapa) {
+        this.nombreCapa = nombreCapa;
+    }
+
+    public RowSelector getRowselector() {
+        return rowselector;
+    }
+
+    public void setRowselector(RowSelector rowselector) {
+        this.rowselector = rowselector;
+    }
+
+    public List<Capas> getCapas() {
+        return capas;
+    }
+
+    public List<GeometryColumns> getTablasdisponibles() {
+        return tablasdisponibles;
+    }
+
+    public Boolean getMostrarPopUpAgregarCapa() {
+        return mostrarPopUpAgregarCapa;
+    }
+
+    public void setMostrarPopUpAgregarCapa(Boolean mostrarPopUpAgregarCapa) {
+        this.mostrarPopUpAgregarCapa = mostrarPopUpAgregarCapa;
+    }
+
+    public void setTablasdisponibles(List<GeometryColumns> tablasdisponibles) {
+        this.tablasdisponibles = tablasdisponibles;
+    }
+
+    public void mostrarAgregarCapa() {
+        setMostrarPopUpAgregarCapa(true);
+    }
+
+    public void ocultarAgregarCapa() {
+        setMostrarPopUpAgregarCapa(false);
+        nombreCapa = "";
+    }
+
+    public void findTabla() {
+        if (!busquedaTabla.isEmpty()) {
+            HtmlDataTable.SearchType type = null;
+            type = HtmlDataTable.SearchType.CONTAINS;
+
+            int newFoundIndex = tablasTable.findRow(busquedaTabla, tablas_selectedColumns, tablas_lastFoundIndex + 1, type, caseSensitive);
+
+            tablas_lastFoundIndex = newFoundIndex;
+            if (newFoundIndex != -1) {
+                tablasTable.navigateToRow(tablas_lastFoundIndex);
+            }
+        }
+    }
+    
+    public void findCapa() {
+        if (busquedaCapa!= null && !busquedaCapa.isEmpty()) {
+            HtmlDataTable.SearchType type = null;
+            type = HtmlDataTable.SearchType.CONTAINS;
+
+            int newFoundIndex = capasTabla.findRow(busquedaCapa, capas_selectedColumns, capas_lastFoundIndex + 1, type, caseSensitive);
+
+            capas_lastFoundIndex = newFoundIndex;
+            if (newFoundIndex != -1) {
+                capasTabla.navigateToRow(capas_lastFoundIndex);
+            }
+        }
+    }
+    
+    public void agregarCapa()
+    {
+        GeometryColumns seleccionada = null;
+        for(GeometryColumns tabla: tablasdisponibles)
+        {
+            if(tabla.selected!=null & tabla.getSelected())
+            {
+                seleccionada = tabla;
+            }
+        }
+        
+        if(seleccionada != null && !nombreCapa.isEmpty())
+        {                       
+            try {
+                Capas nuevaCapa = new Capas();
+                nuevaCapa.setNombre(nombreCapa);
+                String nombre = seleccionada.getFTableName();
+                nuevaCapa.setTabla(nombre);
+                List<String> nombresCampos = Dao.getColumnsFromTable(nombre);
+                
+                nuevaCapa = (Capas)HibernateDao.saveOrUpdate(nuevaCapa);
+                 
+                for(String c: nombresCampos)
+                {
+                    Campos campo = new Campos();
+                    campo.setNombreColumna(c);
+                    campo.setCapaId(nuevaCapa);
+                    campo.setEtiqueta(c.toUpperCase());
+                    campo.setCriterioBusqueda("Like");
+                    nuevaCapa.agregarCampo(campo);                    
+                }
+                
+                HibernateDao.saveOrUpdate(nuevaCapa);
+                
+                capas = HibernateDao.findAll(Capas.class.getName());
+                ocultarAgregarCapa();   
+                nombreCapa = "";
+                tablasdisponibles = getTablasDisponibles();
+                
+            } catch (Exception ex) {
+                Logger.getLogger(CapasBackingBean.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+            }            
+        }    
+    }
+    
+    public void tablaSelectionListener(RowSelectorEvent event)
+    {
+        for(GeometryColumns c : tablasdisponibles)
+        {
+            c.setSelected(false);
+        }
+        
+        tablasdisponibles.get(event.getRow()).setSelected(event.isSelected());
+    }
+    
+    public void capaSelectionListener(RowSelectorEvent event)
+    {
+        for(Capas c : capas)
+        {
+            c.setSelected(false);
+        }
+        
+        capas.get(event.getRow()).setSelected(event.isSelected());
+    }
+    
+     public void yesDeleteCapa() {
+        
+    }
+     
+     public void capaSeleccionada(ActionEvent event) {
+        HtmlCommandLink p = (HtmlCommandLink) event.getComponent();
+        Capas capa = (Capas) p.getAttributes().get("capa");
+        capaSeleccionada = capa;
+        camposCapaSeleccionada = capa.getCamposList();
+    }
+
+    
+    
+    public void mostrarEditarCapa() {
+        toModify = getCapaById(toEdit);
+        setMostrarPopUpEditarCapa(true);
+    }
+    
+    public void mostrarEditarCampo() {
+        campotoModify = getCampoById(campotoEdit);
+        setMostrarPopUpEditarCampo(true);
+    }
+    
+    private Capas getCapaById(int id) {
+        for (Capas currentItem : capas) {
+            if (id == currentItem.getId()) {
+                return currentItem;
+            }
+        }
+        return null;
+    }
+    private Campos getCampoById(int id) {
+        for (Campos currentItem : capaSeleccionada.getCamposList()) {
+            if (id == currentItem.getId()) {
+                return currentItem;
+            }
+        }
+        return null;
+    }
+    
+    
+    public void ocultarEditarCapa() {
+        setMostrarPopUpEditarCapa(false);
+    }
+    
+    public void modificarCapa() {
+        try {
+            if (toModify != null && !"".equals(toModify.getNombre())) {
+                HibernateDao.saveOrUpdate(toModify);
+                ocultarEditarCapa();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void modificarCampo() {
+        try {
+            if (campotoModify != null) {
+                HibernateDao.saveOrUpdate(campotoModify);
+                ocultarEditarCampo();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ocultarEditarCampo() {
+         setMostrarPopUpEditarCampo(false);
+    }
+}

@@ -1,0 +1,155 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+/**
+ *
+ * @author Camila.Riveron
+ */
+@Entity
+@Table(name = "perfiles_capas")
+@NamedQueries({
+    @NamedQuery(name = "PerfilesCapas.findAll", query = "SELECT p FROM PerfilesCapas p")})
+public class PerfilesCapas implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @JoinColumn(name = "perfil_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Perfiles perfilId;
+    @JoinColumn(name = "capa_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Capas capaId;
+    @Column(name = "visible")
+    private Boolean visible;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "perfilCapaId", fetch = FetchType.LAZY)
+    private List<PerfilCampos> perfilCamposList;
+
+    public String getNombreCapa() {
+        return capaId.getNombre();
+    }
+
+    public void setNombreCapa(String nombreCapa) {
+    }
+
+    public List<PerfilCampos> getPerfilCamposList() {
+        return perfilCamposList;
+    }
+
+    public void setPerfilCamposList(List<PerfilCampos> perfilCamposList) {
+        this.perfilCamposList = perfilCamposList;
+    }
+
+    public PerfilesCapas() {
+        perfilCamposList = new ArrayList();
+    }
+
+    public PerfilesCapas(Integer id) {
+        this.id = id;
+        perfilCamposList = new ArrayList();
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Perfiles getPerfilId() {
+        return perfilId;
+    }
+
+    public void setPerfilId(Perfiles perfilId) {
+        this.perfilId = perfilId;
+    }
+
+    public Capas getCapaId() {
+        return capaId;
+    }
+
+    public void setCapaId(Capas capaId) {
+        this.capaId = capaId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        System.out.println("comparo****************************************");
+        if (!(object instanceof PerfilesCapas)) {
+            return false;
+        }
+        PerfilesCapas other = (PerfilesCapas) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        System.out.println("encontre****************************************");
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "model.PerfilesCapas[ id=" + id + " ]";
+    }
+
+    public void asociarPerfilCapa(Perfiles perfilSeleccionado, Capas c) {
+        this.capaId = c;
+        this.perfilId = perfilSeleccionado;
+        perfilSeleccionado.agregarCapa(this);
+        c.agregarPerfil(this);
+    }
+
+    public void desasociarPerfilCapa(Perfiles perfilSeleccionado, Capas capaId) {
+        capaId.quitarPerfil(this);
+        capaId = null;
+    }
+
+    public void agregarCampo(PerfilCampos campoNuevo) {
+        this.perfilCamposList.add(campoNuevo);
+    }
+
+    public void quitarCampo(PerfilCampos campo) {
+        this.perfilCamposList.remove(campo);
+    }
+}

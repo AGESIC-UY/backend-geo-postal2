@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--/*
+ * Licensed under the GPL License.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core"  
+      >
+    <h:head>
+        <link href="./xmlhttp/css/xp/xp.css" rel="stylesheet" type="text/css"/>
+        <link href="css/myStyle.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="js/TemplatePopUp.js"></script>  
+    </h:head>
+    <h:body>
+        <div id="contenedorPopUp" ></div>
+        <h:form id="formularioCapas">
+            <ace:confirmationDialog id="confirmDeleteCapaDialog"
+                                    widgetVar="confirmation"
+                                    message="Está seguro que desea eliminar la Capa seleccionada? Se eliminará toda la información asociada."
+                                    header="Borrar Capa"
+                                    width="370"
+                                    height="190"
+                                    closable="true"
+                                    position="center">
+                <h:panelGrid columns="2" styleClass="centeredPanelGrid">
+                    <h:commandButton id="siborrar" value="Sí" onclick="confirmation.hide();" action="#{capas.yesDeleteCapa}"/>
+                    <h:commandButton id="noborrar" value="No" onclick="confirmation.hide()" />
+                </h:panelGrid>
+            </ace:confirmationDialog>
+
+            <ice:panelPopup id="agregarCapaConexionPopUp" modal="true" autoCentre="true" resizable="true" visible="#{capas.ingresarConexion}" >
+                <f:facet name="header" ><div class="header">Agregar Capa - Conexión<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{capas.ocultarAgregarCapaConexion}" ></ice:commandButton></div></f:facet>
+                <f:facet name="body" >                    
+                    <ice:panelGroup >  
+                        <ice:messages style="color: #37912C; margin-left: 85px;" id="mensajeConexionExito" styleClass="panelErrores"/>
+                        <ice:panelGrid columns="2" styleClass="centeredPanelGrid">
+                            <ice:outputLabel id="hostlabel" value="Host:"></ice:outputLabel><ice:inputText id="host" ></ice:inputText>
+                            <ice:outputLabel id="puertolabel" value="Puerto:"></ice:outputLabel><ice:inputText id="puerto"></ice:inputText>
+                            <ice:outputLabel id="bdlabel" value="Base de datos:"></ice:outputLabel><ice:inputText id="base"></ice:inputText>
+                            <ice:outputLabel id="userlabel" value="Usuario:"></ice:outputLabel><ice:inputText id="user"></ice:inputText>
+                            <ice:outputLabel id="passwordlabel" value="Contraseña:"></ice:outputLabel><ice:inputText id="password"></ice:inputText>
+                        </ice:panelGrid>
+                        <br/>
+                        <ice:panelGrid columns="2">
+                            <h:panelGroup styleClass="float wrapbutton" >
+                                <ice:commandLink value="Probar conexión"/>
+                                <ice:commandButton image="/images/Hdd_Network.png" title="Probar conexión" value="Probar conexión" ></ice:commandButton>
+                            </h:panelGroup> 
+                            <h:panelGroup styleClass="float wrapbutton" >
+                                <ice:commandLink value="Siguiente"  />
+                                <ice:commandButton image="/images/Arrow1_Right.png" title="Siguiente" value="Siguiente" ></ice:commandButton>
+                            </h:panelGroup> 
+                        </ice:panelGrid>
+                    </ice:panelGroup>
+                </f:facet>
+            </ice:panelPopup>
+
+
+            <ice:panelPopup id="agregarCapaPopUp" modal="true" autoCentre="true" resizable="true" visible="#{capas.mostrarPopUpAgregarCapa}"  style="max-height: 80%; overflow-y: auto;">
+                <f:facet name="header" ><div class="header">Agregar Capa<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{capas.ocultarAgregarCapa}" ></ice:commandButton></div></f:facet>
+
+                <f:facet name="body" rendered="#{!capas.ingresarConexion}">
+                    <ice:panelGroup >
+                        <ice:messages id="errores" styleClass="panelErrores"/>
+                        <!--<h:panelGrid columns="3" styleClass="panelGrid50" style="vertical-align: top;">-->
+                        <h:panelGrid styleClass="panelGrid50 float agregarCapaPaso" style="height: 100%; vertical-align: top; float: left">
+                            1. Seleccione una tabla
+
+                            <ice:dataTable id="tablasTable" value="#{capas.tablasdisponibles}"
+                                           var="tabla" 
+                                           styleClass="tabla tablasdisponibles"
+                                           >
+                                <ice:column>
+                                    <ice:rowSelector id="tablaselector" enhancedMultiple="false" preStyleOnSelection="true" value="#{tabla.selected}" selectionListener="#{capas.tablaSelectionListener}"></ice:rowSelector>
+                                    <f:facet name="header">
+                                        <ice:outputText value="Nombre"/>
+                                    </f:facet>
+                                    <ice:outputText value="#{tabla.FTableName}"/>
+                                </ice:column>  
+                            </ice:dataTable>
+                        </h:panelGrid>                               
+                        <h:panelGrid  styleClass="panelGrid40 float" style="height: 100%; float: left">   
+                            <ice:panelGroup   >
+                                <ice:panelGrid columns="1">
+                                    2. Indique el nombre de la capa
+                                    <h:inputText id="nombreCapaNueva" value="#{capas.nombreCapa}" />   
+                                </ice:panelGrid> 
+                            </ice:panelGroup> 
+                        </h:panelGrid>
+
+                        <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                            <ice:commandLink value="Agregar Capa" action="#{capas.agregarCapa}" />
+                            <ice:commandButton image="/images/Save.png" title="Agregar Capa" value="Agregar Capa" action="#{capas.agregarCapa}" ></ice:commandButton>
+                        </h:panelGroup>  
+                        <!--</h:panelGrid>-->
+                    </ice:panelGroup>
+                </f:facet>
+            </ice:panelPopup>
+
+            <ice:panelPopup id="modificarCapaPopUp" modal="true" autoCentre="true" resizable="false" visible="#{capas.mostrarPopUpEditarCapa}" >
+                <f:facet name="header"><div class="header">Editar Capa<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{capas.ocultarEditarCapa}"></ice:commandButton></div></f:facet>
+                <f:facet name="body">
+                    <ice:panelGroup  styleClass="marginleft15">
+                        <ice:panelGrid columns="2">
+                            <ice:outputText value="Nombre:"/>
+                            <h:inputText id="nombreCapaToModify"  value="#{capas.toModify.nombre}"/>                                                
+
+
+                            <ice:outputText value="ID metadato (geonetwork):"/>
+                            <h:inputText id="urlCapaToModify"  value="#{capas.toModify.metadato}" styleClass="textInputLarge"/> 
+
+                            <ice:outputText value="Escala mínima:"/>
+                            <h:inputText id="escalaminCapaToModify"  value="#{capas.toModify.escalaMinima}" /> 
+
+                            <ice:outputText value="Escala máxima:"/>
+                            <h:inputText id="escalamaxCapaToModify"  value="#{capas.toModify.escalaMaxima}" /> 
+
+                            <ice:outputText value="Template Popup por defecto:"/>
+                            <h:panelGroup>
+                                <h:inputTextarea id="templatePopUpCapaToModify"  value="#{capas.toModify.templatePopUp}" styleClass="textInputLarge" /> 
+                                <ice:commandLink  id="previsualizarPopUp" value="Previsualizar" action="#{capas.previsualizarPopUp}" />
+                            </h:panelGroup>
+
+                            <ice:outputText value=""/>
+
+                            <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                                <ice:commandLink  id="modifCapa" value="Guardar" action="#{capas.modificarCapa}" />
+                                <ice:commandButton image="/images/Save.png" title="Guardar perfil" value="Guardar perfil" action="#{capas.modificarCapa}" ></ice:commandButton>
+                            </h:panelGroup>                                    
+                        </ice:panelGrid> 
+                    </ice:panelGroup> 
+                </f:facet>
+            </ice:panelPopup>
+
+
+            <ice:panelPopup id="modificarCampoPopUp" modal="true" autoCentre="true" resizable="false" visible="#{capas.mostrarPopUpEditarCampo}" >
+                <f:facet name="header"><div class="header">Editar Campo<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{capas.ocultarEditarCampo}"></ice:commandButton></div></f:facet>
+                <f:facet name="body">
+                    <ice:panelGroup  styleClass="marginleft15">
+                        <ice:panelGrid columns="2">
+                            <ice:outputText value="Nombre columna:"/>
+                            <ice:outputText  value="#{capas.campoEditar.nombreColumna}"/>        
+                            <ice:outputText value="Etiqueta:"/>                               
+                            <ice:panelGrid columns="2">                                
+                                <h:inputText id="etiquetaCampoToModify"  value="#{capas.campoEditar.etiqueta}"/> 
+                                <span class="span">En caso de ser vacía, 
+                                    el campo no será visible.</span>
+                            </ice:panelGrid>
+                            <ice:outputText value="Criterio búsqueda "/>
+                            <ice:selectOneMenu id="criterioCampoToModify" value="#{capas.campoEditar.criterioBusqueda}">
+                                <c:if test="#{!capas.campoAModificarNumerico}">
+                                    <f:selectItems value="#{capas.criteriosDeBusquedaTexto}" />
+                                </c:if>
+                                <c:if test="#{capas.campoAModificarNumerico}">
+                                    <f:selectItems value="#{capas.criteriosDeBusquedaNumericos}" />
+                                </c:if>
+                            </ice:selectOneMenu>                                                  
+                        </ice:panelGrid>
+
+                        <h:panelGroup styleClass="float wrapbutton" style="float: right; clear: both ">
+                            <ice:commandLink  id="guardarCampoButton" value="Guardar" action="#{capas.modificarCampo}" />
+                            <ice:commandButton image="/images/Save.png" title="Guardar campo" value="Guardar campo" action="#{capas.modificarCampo}" ></ice:commandButton>
+                        </h:panelGroup> 
+
+
+
+<!--                        <ace:linkButton value="guarda" action="#{capas.modificarCampo}"/>
+<ice:commandButton styleClass="marginleft50 groovybutton" value="Guardar" action="#{capas.modificarCampo}" />-->
+                    </ice:panelGroup>                                           
+                </f:facet>
+            </ice:panelPopup> 
+
+            <ice:panelGrid columns="1">
+                <ice:panelGroup styleClass="panelMenu" >
+                    <ui:include src="menu.xhtml" /> 
+                </ice:panelGroup>
+                <ice:panelGroup style="position: absolute; top:70px; bottom: 30px; left: 0px; right: 0px;">
+                    <ice:panelDivider id="divisorVertical"
+                                      orientation="vertical"
+                                      dividerPosition="45"
+                                      style="width: 100%; height: 98%;"
+                                      styleClass="divider">
+                        <f:facet name="first">
+                            <ice:panelGroup  style="margin: 10px; height: 95%; position: relative" styleClass="divTablaCapas"> 
+
+                                <!-- *********************************************************** -->
+                                <!-- ***************** TABLA DE CAPAS *********************** -->
+                                <!-- *********************************************************** -->
+
+                                <ice:dataTable id="tablaDeCapas" value="#{capas.capas}"
+                                               var="capa" 
+                                               styleClass="tabla tablaCapas"
+                                               width="100%"
+                                               rowClasses="myrow">
+
+                                    <ice:column>     
+                                        <f:facet name="header">
+                                            <ice:outputText value="ID"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{capa.id}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Nombre"/>
+                                        </f:facet>
+
+<!--<ice:commandLink action="#{capas.capaSeleccionada2}" value="#{capa.nombre}" >-->
+                                        <h:commandLink action="#{capas.capaSeleccionada2}" value="#{capa.nombre}" >
+
+<!--<ace:linkButton action="#{capas.capaSeleccionada2}" value="#{capa.nombre}" styleClass="linkTabla" >-->
+                                            <f:setPropertyActionListener target="#{capas.capaEnCurso}"
+                                                                         value="#{capa}"/>
+                                            <!--</ace:linkButton>-->
+                                            <!--</ice:commandLink>-->
+                                        </h:commandLink>
+
+
+<!--<ice:commandLink styleClass="perfilLink" title="Seleccione para ampliar información" value="#{capa.nombre}" action="#{capas.hola}"/>-->
+<!--                                        <ice:commandLink styleClass="perfilLink" title="Seleccione para ampliar información" value="#{capa.nombre}" actionListener="#{capas.capaSeleccionada2}">
+    <f:attribute value="#{capa}" name="capa"> </f:attribute>  
+</ice:commandLink>-->
+<!--                                        <ice:outputText value="#{capa.nombre}"/>-->
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Tabla"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{capa.tabla}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Escala mínima"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{capa.escalaMinima}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Escala máxima"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{capa.escalaMaxima}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="URL Metadato"/>
+                                        </f:facet>
+                                        <ice:panelGroup rendered="#{capa.metadato!=null}">
+                                            <h:commandButton image="/images/Link.png"
+                                                             alt="Ver metadatos" title="Ver metadatos"
+                                                             style="margin-left: 10px;"
+                                                             styleClass="boton"
+                                                             onclick="urlM = '../geonetwork/srv/spa/metadata.show?id=' + '#{ capa.metadato}'; window.open(urlM)"  >
+                                            </h:commandButton>                                            
+                                        </ice:panelGroup>                                                                                   
+                                    </ice:column>
+                                    <ice:column styleClass="columnMedium">
+                                        <f:facet name="header">Editar</f:facet>
+                                        <h:commandButton image="/images/Pen16.png"
+                                                         alt="Editar" title="Editar"
+                                                         styleClass="botonTabla"
+                                                         action="#{capas.mostrarEditarCapa}"
+                                                         >
+                                            <f:setPropertyActionListener target="#{capas.toEdit}"
+                                                                         value="#{capa.id}"/>
+                                        </h:commandButton>
+                                    </ice:column>
+                                    <ice:column styleClass="columnSmall" >
+                                        <f:facet name="header">Borrar</f:facet>
+                                        <h:commandButton image="/images/CancelOrange.png"
+                                                         alt="Borrar" title="Borrar"
+                                                         styleClass="botonTabla"
+                                                         onclick="confirmation.show()">
+                                            <f:setPropertyActionListener target="#{capas.toRemove}"
+                                                                         value="#{capa.id}"/>
+                                        </h:commandButton>
+                                    </ice:column>
+                                </ice:dataTable>
+                                <ice:panelGroup styleClass="footerCapas">
+                                    <ice:commandButton image="/images/Plus.png" title="Agregar capa" styleClass="agregarButton" value="Agregar Capa"  action="#{capas.mostrarAgregarCapa}"  style="vertical-align: bottom!important"></ice:commandButton>
+                                </ice:panelGroup>
+                            </ice:panelGroup>
+
+                        </f:facet>
+
+                        <f:facet name="second">
+                            <ice:panelGroup style="padding: 10px; height: 95%; " rendered="#{not empty capas.capaSeleccionada.camposList}">
+                                <ice:panelGroup  styleClass="header" >
+                                    Campos de la capa "#{capas.capaSeleccionada.nombre}"
+                                </ice:panelGroup>  
+
+                                <ice:dataTable id="camposTable" value="#{capas.capaSeleccionada.camposList}"
+                                               var="campo"                                                
+                                               styleClass="tabla tablaConHeader"
+                                               rowClasses="myrow">                                    
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Nombre columna"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{campo.nombreColumna}"/>                                    
+                                    </ice:column>
+                                    <ice:column>     
+                                        <f:facet name="header">
+                                            <ice:outputText value="Etiqueta"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{campo.etiqueta}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Criterio búsqueda"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{campo.criterioBusqueda}"/>
+                                    </ice:column>
+                                    <ice:column styleClass="columnMedium">
+                                        <f:facet name="header">Editar</f:facet>
+                                        <h:commandButton image="/images/Pen16.png"
+                                                         alt="Editar" title="Editar"
+                                                         styleClass="boton"
+                                                         action="#{capas.mostrarEditarCampo}"
+                                                         >
+                                            <f:setPropertyActionListener target="#{capas.campoEditarId}"
+                                                                         value="#{campo.id}"/>
+                                        </h:commandButton>
+                                    </ice:column>                                 
+                                </ice:dataTable>
+
+
+
+                            </ice:panelGroup>
+                        </f:facet>
+                    </ice:panelDivider>
+                </ice:panelGroup>
+            </ice:panelGrid>
+        </h:form>
+    </h:body>
+</html>

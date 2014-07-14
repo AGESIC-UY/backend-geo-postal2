@@ -1,0 +1,428 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package backingbeans;
+
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import dao.HibernateDao;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import model.PerfilCampos;
+import model.PerfilesCapas;
+import servicios.CamposModel;
+import servicios.CapasModel;
+import servicios.ConsultaModel;
+import servicios.PerfilModel;
+import servicios.ResultadoBusqueda;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import dao.DaoAnubis;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Date;
+import jxl.write.DateTime;
+import model.PerfilPlugins;
+import model.Perfiles;
+import servicios.ResultadoBusquedaPunto;
+
+/**
+ *
+ * @author Camila.Riveron
+ */
+@ManagedBean(name = "servicios")
+@ViewScoped
+public class ServiciosBean {
+
+    public String getBusquedaPorCapas() throws Exception {
+
+        ArrayList<ResultadoBusqueda> salida = new ArrayList<ResultadoBusqueda>();
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+        Gson gson = gsonBuilder.create();
+        //Gson gson = new Gson();
+
+        try {
+
+            FacesContext context = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            String camposJson = (String) request.getParameter("campos");
+
+            ConsultaModel consulta = (ConsultaModel) gson.fromJson(camposJson, ConsultaModel.class);
+            List<String> props = new ArrayList<>();
+            List<String> etiquetas = new ArrayList();
+            List r = HibernateDao.busqueda(consulta, props, etiquetas);
+
+            boolean primero = true;
+            String jsonSalida = "{ error: 0, resultado: {";
+
+            for (Object o : r) {
+                Object[] ob = (Object[]) o;
+                Integer id = (Integer) ob[0];
+                //Geometria
+                Geometry geom = (Geometry) ob[1];
+                //Punto
+                Geometry geom2 = (Geometry) ob[2];
+
+                Point p = (Point) geom2;
+                jsonSalida += primero ? "" : " ,";
+                jsonSalida += id.toString() + " : {";
+                jsonSalida += "cp: " + DaoAnubis.getCP(geom) + ", ";
+                jsonSalida += "x: " + geom2.getCoordinate().x + ", ";
+                jsonSalida += "y: " + geom2.getCoordinate().y + ", ";
+
+                jsonSalida += "propiedades: {";
+                if (geom instanceof MultiPolygon) {
+                    jsonSalida += "'color':'azul' ";
+                } else if (geom instanceof Point) {
+                    jsonSalida += "'color':'rojo' ";
+                } else {
+                    jsonSalida += "'color':'rosa' ";
+                }
+                String etiqueta = "";
+                for (int i = 3; i < ob.length; i++) {
+                    jsonSalida += " , '" + props.get(i - 3) + "' : '" + (String) ob[i] + "'";
+                    if (etiquetas.contains(props.get(i - 3))) {
+                        if (!etiqueta.equals("")) {
+                            etiqueta += ", ";
+                        }
+                        etiqueta += (String) ob[i];
+                    }
+                }
+
+                jsonSalida += " } , ";
+
+                jsonSalida += "nombre: '" + etiqueta + "', ";
+
+                jsonSalida += "capa: " + getGeometriaJSON(geom) + "}";
+
+                primero = false;
+            }
+            jsonSalida += "}}";
+
+            System.out.println("**************************** JSONfin   ");
+
+            //System.out.println(jsonSalida);
+            return jsonSalida;
+        } catch (Exception ex) {
+            Logger.getLogger(ServiciosBean.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+
+    }
+
+    public String getbusquedaNIS() throws Exception {
+
+        ArrayList<ResultadoBusqueda> salida = new ArrayList<>();
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+        Gson gson = gsonBuilder.create();
+
+        try {
+            FacesContext context = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            String jsonSalida = "";
+            int nis = Integer.parseInt(request.getParameter("nisValor"));
+
+            ResultadoBusquedaPunto rs = DaoAnubis.buscarDireccionNIS(nis);
+
+            DaoAnubis.transformar(rs, 31981, 4326)       ;
+ 
+            rs.setCp(DaoAnubis.getCP(rs.getPunto()));
+
+            jsonSalida += gson.toJson(rs);
+
+            //System.out.println(jsonSalida);
+            return jsonSalida;
+        } catch (Exception ex) {
+            Logger.getLogger(ServiciosBean.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+
+    }
+    
+
+
+    
+
+    public String getguardarObsNIS() throws Exception {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        String obs = URLDecoder.decode((String) request.getParameter("nisObs"), "UTF-8");
+        int nis = Integer.parseInt(request.getParameter("nisNum"));
+        
+        String res = DaoAnubis.guardarObsNIS(nis, obs);
+
+        return res;
+    }
+
+    public String getPropiedadesJSON(HashMap<String, String> propiedades) {
+        String salida = "{";
+
+        for (String k : propiedades.keySet()) {
+            if (!salida.equals("{")) {
+                salida += ",";
+            }
+            salida += k + ": '" + propiedades.get(k) + "'";
+        }
+
+        salida += "}";
+        return salida;
+    }
+
+    public String getGeometriaJSON(Geometry geometria) {
+        if (geometria == null) {
+            return "null";
+        }
+
+        String salida = "{tipo: '" + geometria.getGeometryType() + "',";
+        salida += "srid: " + geometria.getSRID() + ",";
+        salida += "geometrias: [";
+        if (geometria instanceof MultiPolygon) {
+            MultiPolygon mp = (MultiPolygon) geometria;
+            int i = 1;
+//            GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+//            Gson gson = gsonBuilder.create();
+//            salida += gson.toJson(mp.getGeometryN(0).getCoordinates());
+
+            for (int y = 0; y < mp.getNumGeometries(); y++) {
+                Polygon p = (Polygon) mp.getGeometryN(y);
+                if (i != 1) {
+                    salida += ",";
+                }
+                GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+                Gson gson = gsonBuilder.create();
+                salida += gson.toJson(p.getExteriorRing().getCoordinates());
+                //               salida += "[";
+
+//                int j = 1;               
+//                
+//                for (Coordinate pp : p.getExteriorRing().getCoordinates()) {
+//                    if (j != 1) {
+//                        salida += ",";
+//                    }
+//                    salida += "{x:" + pp.x + ",y:" + pp.y + "}";
+//                    j++;
+//                }
+                //               salida += "]";
+                i++;
+            }
+
+        } else if (geometria instanceof MultiLineString) {
+            // MultiLineString ml = (MultiLineString) geometria;
+            // int i = 1;
+            GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+            Gson gson = gsonBuilder.create();
+            salida += gson.toJson(geometria.getCoordinates());
+//            for (int y = 0; y < ml.getNumGeometries(); y++) {
+//                LineString ln = (LineString) ml.getGeometryN(y);
+//                if (i != 1) {
+//                    salida += ",";
+//                }
+//                salida += "[";
+//                int j = 1;
+//                for (Coordinate pp : ln.getCoordinates()) {
+//                    if (j != 1) {
+//                        salida += ",";
+//                    }
+//                    salida += "{x:" + pp.x + ",y:" + pp.y + "}";
+//                    j++;
+//                }
+//                salida += "]";
+//                i++;
+//            }
+        } else if (geometria instanceof Point) {
+            Point pp = (Point) geometria;
+            salida += "{x:" + pp.getCoordinate().x + ",y:" + pp.getCoordinate().y + "}";
+        } else {
+            System.out.println("TIPO NO SOPORTADO: " + geometria.getGeometryType());
+            return "null";
+        }
+//		System.out.println(geometria.getGeometry().getTypeString());
+//		System.out.println(geometria.getValue());
+
+        salida += "]}";
+
+        return salida;
+    }
+
+    public String getCapasJson() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        String nombrePerfil = (String) request.getParameter("perfil");
+
+        try {
+            nombrePerfil = URLDecoder.decode(nombrePerfil, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(HibernateDao.class.getName()).log(Level.SEVERE, null, ex);
+            nombrePerfil = "Default";
+        }
+
+        List<PerfilesCapas> capas = HibernateDao.getPerfilByName(nombrePerfil);
+        Collections.sort((List) capas);
+        Collections.reverse((List) capas);
+
+        PerfilModel perfil = new PerfilModel();
+        perfil.setNombrePerfil(nombrePerfil);
+        List<CapasModel> capasConvertidas = convertCapaModel(capas);
+        perfil.setCapas(capasConvertidas);
+
+        Gson gson;
+        gson = new Gson();
+        String jsonRes = gson.toJson(perfil);
+//        
+//        
+//        ConsultaModel model = new ConsultaModel();
+//        List<Consulta> listaConsultas = new ArrayList<Consulta>();
+//        Consulta c1 = new Consulta();
+//        c1.setNombreCapa("Capa1");
+//        List<ConsultaCampo> campos = new ArrayList<ConsultaCampo>();
+//        ConsultaCampo campo1 = new ConsultaCampo();
+//        campo1.setCriterio("Like");
+//        campo1.setNombreCampo("gid");
+//        campo1.setValor("cuak");
+//         ConsultaCampo campo2 = new ConsultaCampo();
+//        campo2.setCriterio("Igual");
+//        campo2.setNombreCampo("gid");
+//        campo2.setValor("jaja");
+//        campos.add(campo2);
+//        campos.add(campo1);
+//        c1.setConsultaCampos(campos);
+//        
+//        Consulta c2 = new Consulta();
+//        c2.setNombreCapa("Capa2");
+//        List<ConsultaCampo> campos2 = new ArrayList<ConsultaCampo>();
+//        ConsultaCampo campo22 = new ConsultaCampo();
+//        campo22.setCriterio("Like2");
+//        campo22.setNombreCampo("gid2");
+//        campo22.setValor("cuak2");
+//         ConsultaCampo campo222 = new ConsultaCampo();
+//        campo222.setCriterio("Igual2");
+//        campo222.setNombreCampo("gid2");
+//        campo222.setValor("jaja");
+//        campos.add(campo222);
+//        campos.add(campo22);
+//        c2.setConsultaCampos(campos);
+//        listaConsultas.add(c2);
+//        listaConsultas.add(c1);
+//        
+//        model.setConsultas(listaConsultas);
+//        
+//        String json = gson.toJson(model);
+
+
+        return jsonRes;
+    }
+
+    public String getPluginsJson() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        String nombrePerfil = (String) request.getParameter("perfil");
+
+        try {
+            nombrePerfil = URLDecoder.decode(nombrePerfil, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(HibernateDao.class.getName()).log(Level.SEVERE, null, ex);
+            nombrePerfil = "Default";
+        }
+
+        Perfiles p = HibernateDao.getPerfilPorNombre(nombrePerfil);
+        PerfilModel perfil = new PerfilModel();
+        perfil.setNombrePerfil(nombrePerfil);
+        perfil.setCapas(new ArrayList());
+        perfil.setPlugins(new ArrayList());
+        for (PerfilPlugins plugin : p.getPerfilPluginsList()) {
+            perfil.getPlugins().add(plugin.getPluginId().getNombre());
+        }
+
+        Gson gson;
+        gson = new Gson();
+        String jsonRes = gson.toJson(perfil);
+//        
+//        
+//        ConsultaModel model = new ConsultaModel();
+//        List<Consulta> listaConsultas = new ArrayList<Consulta>();
+//        Consulta c1 = new Consulta();
+//        c1.setNombreCapa("Capa1");
+//        List<ConsultaCampo> campos = new ArrayList<ConsultaCampo>();
+//        ConsultaCampo campo1 = new ConsultaCampo();
+//        campo1.setCriterio("Like");
+//        campo1.setNombreCampo("gid");
+//        campo1.setValor("cuak");
+//         ConsultaCampo campo2 = new ConsultaCampo();
+//        campo2.setCriterio("Igual");
+//        campo2.setNombreCampo("gid");
+//        campo2.setValor("jaja");
+//        campos.add(campo2);
+//        campos.add(campo1);
+//        c1.setConsultaCampos(campos);
+//        
+//        Consulta c2 = new Consulta();
+//        c2.setNombreCapa("Capa2");
+//        List<ConsultaCampo> campos2 = new ArrayList<ConsultaCampo>();
+//        ConsultaCampo campo22 = new ConsultaCampo();
+//        campo22.setCriterio("Like2");
+//        campo22.setNombreCampo("gid2");
+//        campo22.setValor("cuak2");
+//         ConsultaCampo campo222 = new ConsultaCampo();
+//        campo222.setCriterio("Igual2");
+//        campo222.setNombreCampo("gid2");
+//        campo222.setValor("jaja");
+//        campos.add(campo222);
+//        campos.add(campo22);
+//        c2.setConsultaCampos(campos);
+//        listaConsultas.add(c2);
+//        listaConsultas.add(c1);
+//        
+//        model.setConsultas(listaConsultas);
+//        
+//        String json = gson.toJson(model);
+
+
+        return jsonRes;
+    }
+
+    private List<CapasModel> convertCapaModel(List<PerfilesCapas> capas) {
+        List<CapasModel> capasConv = new ArrayList<CapasModel>();
+        for (PerfilesCapas capa : capas) {
+            CapasModel capaC = new CapasModel();
+            capaC.setNombre(capa.getCapaId().getNombre());
+            capaC.setTabla(capa.getCapaId().getTabla());
+            capaC.setVisible(capa.getVisible());
+            capaC.setBase(capa.getBase());
+            List<CamposModel> campos = new ArrayList<CamposModel>();
+
+            for (PerfilCampos campo : capa.getPerfilCamposList()) {
+                CamposModel campoC = new CamposModel();
+                campoC.setEtiquetaResultado(campo.getEtiquetaResultado());
+                campoC.setCriterioBusqueda(campo.getCriterioBusqueda());
+                campoC.setEtiqueta(campo.getEtiqueta());
+                campoC.setNombreColumna(campo.getNombreColumna());
+                campos.add(campoC);
+            }
+
+            capaC.setCampos(campos);
+            capasConv.add(capaC);
+        }
+
+        return capasConv;
+    }
+}

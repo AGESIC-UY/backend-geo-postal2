@@ -1,0 +1,397 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package dao;
+
+import backingbeans.SessionBean;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import model.Campos;
+import model.Capas;
+import model.PerfilCampos;
+import model.Perfiles;
+import model.PerfilesCapas;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.spatial.GeometryType;
+import org.hibernate.type.StringType;
+import servicios.Consulta;
+import servicios.ConsultaCampo;
+import servicios.ConsultaModel;
+
+/**
+ *
+ * @author Diego.Gonzalez
+ */
+public class HibernateDao {
+
+//    public static HibernateDao instance = null;
+    private static Session session = null;
+
+    protected HibernateDao() {
+    }
+
+//    public static HibernateDao getInstance() {
+//        if (instance == null) {
+//            instance = new HibernateDao();
+//        }
+//        return instance;
+//    }
+    /**
+     * * Busca en la base las tablas con componentes geográficos **
+     */
+    public static List<String> getTablasDisponibles() {
+        Session s = HibernateDao.getSession();
+        s.getTransaction().begin();
+        List<String> result = (List<String>) s.createQuery("SELECT DISTINCT f_table_name FROM geometry_columns").list();
+        s.getTransaction().commit();
+        return result;
+    }
+
+    /**
+     * * Busca en la base las tablas con componentes geográficos **
+     */
+//    public static List<String> getTablasDisponibles() {
+//        Session s = HibernateDao.getSession();
+//        s.beginTransaction();
+//        List<String> result = (List<String>) s.createQuery("SELECT DISTINCT f_table_name FROM geometry_columns").list();        
+//        s.getTransaction().commit();
+//        return result;
+//    }
+    private static void setearValor(int i, SQLQuery query, String[] valores) {
+        /**
+         *
+         *
+         *
+         * SI SE AGREGA UN TIPO ACA, AGREGAR TAMBIEN EN DAO FUNCION
+         * esColumnaNumerica
+         *
+         *
+         *
+         */
+        String s;
+        byte[] b;
+        switch (valores[1].trim().toLowerCase()) {
+            case "serial":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "int":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "float8":
+                query.setFloat(i, Float.parseFloat(valores[0]));
+                break;
+            case "varchar":
+                s = valores[0];
+                try {
+                    String ss = URLDecoder.decode(s, "UTF-8");
+                    query.setString(i, ss);
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(HibernateDao.class.getName()).log(Level.SEVERE, null, ex);
+                    query.setString(i, valores[0]);
+                }
+                break;
+            case "char":
+                s = valores[0];
+                try {
+                    String ss = URLDecoder.decode(s, "UTF-8");
+                    query.setString(i, ss);
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(HibernateDao.class.getName()).log(Level.SEVERE, null, ex);
+                    query.setString(i, valores[0]);
+                }
+                break;
+            case "float4":
+                query.setFloat(i, Float.parseFloat(valores[0]));
+                break;
+            case "decimal":
+                query.setFloat(i, Float.parseFloat(valores[0]));
+                break;
+            case "numeric":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "int4":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "int8":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "serial4":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            case "serial8":
+                query.setInteger(i, Integer.parseInt(valores[0]));
+                break;
+            default:
+                s = valores[0];
+                try {
+                    String ss = URLDecoder.decode(s, "UTF-8");
+                    query.setString(i, ss);
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(HibernateDao.class.getName()).log(Level.SEVERE, null, ex);
+                    query.setString(i, valores[0]);
+                }
+                break;
+        }
+    }
+
+    public static List busqueda(ConsultaModel consultas, List<String> lista, List<String> etiquetas) {
+
+        Session s = HibernateDao.getSession();
+        try {
+            s.beginTransaction();
+            String perfilNombre = consultas.getPerfil();
+            Query queryp = s.createQuery("SELECT p from Perfiles p WHERE p.nombre = ?");
+            queryp.setString(0, perfilNombre);
+            List<Perfiles> resultp = (List<Perfiles>) queryp.list();
+            Perfiles perfil = resultp.get(0);
+
+            List<Consulta> consultasDatos = consultas.getConsultas();
+            int cantidadCapas = consultasDatos.size();
+
+            String consulta = "";
+            Consulta consultaDato;
+            List<String[]> valores = new ArrayList<>();
+            List<String> campos2 = new LinkedList();
+            for (int i = 0; i < cantidadCapas; i++) {
+
+                consultaDato = consultasDatos.get(i);
+
+                String columnaGeometrica = "geom";
+                Query qgeo = s.createQuery("SELECT c.fGeometryColumn FROM GeometryColumns c where c.fTableName = ?");
+                qgeo.setString(0, consultaDato.getNombreCapa());
+                List resGeoCol = qgeo.list();
+                columnaGeometrica = (String) resGeoCol.get(0);
+
+
+                PerfilesCapas capa = new PerfilesCapas();
+
+
+                for (PerfilesCapas c : perfil.getPerfilesCapasList()) {
+                    if (c.getCapaId().getTabla().equals(consultaDato.getNombreCapa())) {
+                        capa = c;
+                        break;
+                    }
+                }
+
+                String campos = "";
+                for (PerfilCampos c : capa.getPerfilCamposList()) {
+                    if (!c.getEtiqueta().isEmpty() && !c.getNombreColumna().equals(columnaGeometrica)) {
+                        campos += " , p." + c.getNombreColumna() + " as " + c.getNombreColumna();
+                        campos2.add(c.getNombreColumna());
+                        if (c.getEtiquetaResultado()) {
+                            etiquetas.add(c.getNombreColumna());
+                        }
+                    }
+                }
+
+                lista.addAll(campos2);
+
+                if (i > 0) {
+                    consulta += " UNION ";
+                }
+
+                consulta += "select p.gid as GID, st_simplify(st_transform(p." + columnaGeometrica + ",4326),0.0005) as geom, st_transform(st_centroid(p." + columnaGeometrica + "),4326) as centroid "
+                        + campos + " from " + consultaDato.getNombreCapa() + " p "
+                        + "where 1=1 ";
+
+                List<ConsultaCampo> consultaCampos = consultaDato.getConsultaCampos();
+                for (int j = 0; j < consultaCampos.size(); j++) {
+                    consulta += "AND" + getCriterio(consultaDato.getNombreCapa(), consultaCampos.get(j).getNombreCampo(), consultaCampos.get(j).getCriterio());
+                    String[] fila = new String[2];
+                    fila[0] = consultaCampos.get(j).getValor();
+                    fila[1] = Dao.getTypeColumnFromTable(consultaDato.getNombreCapa(), consultaCampos.get(j).getNombreCampo());
+                    valores.add(fila);
+                }
+            }
+            SQLQuery query = s.createSQLQuery(consulta);
+            for (int i = 0; i < valores.size(); i++) {
+
+                setearValor(i, query, valores.get(i));
+                //query.setString(i, valores.get(i)[0]);
+            }
+            query.addScalar("GID");
+            query.addScalar("geom", GeometryType.INSTANCE);
+            query.addScalar("centroid", GeometryType.INSTANCE);
+            for (String a : campos2) {
+                query.addScalar(a, StringType.INSTANCE);
+            }
+            List result = query.list();
+            s.getTransaction().commit();
+
+            return result;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            if (s.getTransaction() != null) {
+                s.getTransaction().rollback();
+            }
+            return new ArrayList();
+        }
+    }
+
+    private static String getCriterio(String tabla, String campo, String criterio) {
+        if (criterio.equals("Like")) {
+            return " upper( CAST(p." + campo + " as text)) like '%' || upper(CAST (? as text)) || '%'";
+        } else if (criterio.equals("Igual")) {
+            return " UPPER(CAST(p." + campo + " as text))  = UPPER(CAST( ? as text))";
+        } else if (criterio.equals("Entre")) {
+        } else if (criterio.equals("Mayor")) {
+            return " p." + campo + "  > ?";
+        } else if (criterio.equals("Menor")) {
+            return " p." + campo + " < ?";
+        } //        else if(criterio.equals("Exacto"))
+        //        {
+        //            return tabla +"."+ campo + "=" + valor;
+        //        }
+        else if (criterio.equals("Distinto")) {
+            return " CAST(p." + campo + " as text) != ?";
+        }
+        return "1=1";
+    }
+
+    /**
+     * Elimina todos los perfilesCampo que tienen asociado el campo pasado por
+     * parámetro
+     *
+     * @param campo
+     */
+    public static void deletePerfilCampo(Campos campo) {
+        Session s = HibernateDao.getSession();
+        try {
+            s.getTransaction().begin();
+            Query query = s.createQuery("SELECT p from PerfilCampos p WHERE p.campoId.id = ?");
+            query.setInteger(0, campo.getId());
+            List<PerfilCampos> result = (List<PerfilCampos>) query.list();
+            for (PerfilCampos c : result) {
+                s.delete(c);
+            }
+            s.getTransaction().commit();
+        } catch (Exception e) {
+            if (s.getTransaction() != null) {
+                s.getTransaction().rollback();
+            }
+        }
+    }
+
+    public static List<PerfilesCapas> getPerfilByName(String perfilNombre) {
+        Session s = HibernateDao.getSession();
+        s.getTransaction().begin();
+        Query query = s.createQuery("SELECT p from PerfilesCapas p WHERE p.perfilId.nombre = ?");
+        query.setString(0, perfilNombre);
+        List<PerfilesCapas> result = (List<PerfilesCapas>) query.list();
+        s.getTransaction().commit();
+        return result;
+    }
+
+    public static Capas getCapasPorNombre(String capasNombre) {
+        Session s = HibernateDao.getSession();
+        s.getTransaction().begin();
+        Query query = s.createQuery("SELECT p from Capas p WHERE p.nombre = ?");
+        query.setString(0, capasNombre);
+        List<Capas> result = (List<Capas>) query.list();
+        s.getTransaction().commit();
+        if (result != null && result.size() > 0) {
+            return result.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static Perfiles getPerfilPorNombre(String perfilNombre) {
+        Session s = HibernateDao.getSession();
+        s.getTransaction().begin();
+        Query query = s.createQuery("SELECT p from Perfiles p WHERE p.nombre = ?");
+        query.setString(0, perfilNombre);
+        List<Perfiles> result = (List<Perfiles>) query.list();
+        s.getTransaction().commit();
+        if (result != null && result.size() > 0) {
+            return result.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static List findAll(String className) {
+        Session s = HibernateDao.getSession();
+        System.out.println("begin findAll");
+        s.getTransaction().begin();
+        Query q = s.createQuery("select p from " + className + " p");
+        List result = (List) q.list();
+        /*for (Object o: result){
+         s.refresh(o);
+         }*/
+        s.getTransaction().commit();
+        System.out.println("commit findAll");
+        return result;
+
+    }
+
+    public static Object getById(String className, Integer id) {
+        Session s = HibernateDao.getSession();
+        System.out.println("begin getById");
+        s.getTransaction().begin();
+        List result = (List) s.createQuery("select p from " + className + " p where id = " + id).list();
+        s.refresh(result.get(0));
+        s.getTransaction().commit();
+        System.out.println("commit getById");
+        return result.get(0);
+    }
+
+    public static Object saveOrUpdate(Object entity) {
+        Session s = HibernateDao.getSession();
+        try {
+            s.getTransaction().begin();
+            //s.saveOrUpdate(entity);
+            Integer a = (Integer) s.save(entity);
+            s.getTransaction().commit();
+
+            Object o = getById(entity.getClass().getName(), a);
+            return o;
+
+        } catch (Exception e) {
+            if (s.getTransaction() != null) {
+                s.getTransaction().rollback();
+            }
+        }
+        return null;
+        //s.close(); 
+    }
+
+    public static void delete(Object entity) {
+        Session s = HibernateDao.getSession();
+        try {
+            s.getTransaction().begin();
+            s.delete(entity);
+            s.getTransaction().commit();
+        } catch (Exception e) {
+            if (s.getTransaction() != null) {
+                s.getTransaction().rollback();
+            }
+        }
+        //s.close();        
+    }
+
+    public static Session getSession() {
+
+        SessionBean sessionBean = findBean("SessionBean");
+        return sessionBean.getSession();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T findBean(String beanName) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        request.getParameter("");
+
+        return (T) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
+}

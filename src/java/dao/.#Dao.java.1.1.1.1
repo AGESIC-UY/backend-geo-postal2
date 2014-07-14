@@ -1,0 +1,69 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package dao;
+
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import model.Perfiles;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+
+/**
+ *
+ * @author Diego.Gonzalez
+ */
+public class Dao {
+
+    public static List findAll(String className) throws Exception {
+        
+         SessionFactory sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+         sessionFactory.openSession();
+         Session session = sessionFactory.getCurrentSession();
+         session.beginTransaction();
+         //Query q = session.createQuery("select Perfiles p from Perfiles");
+         List<Perfiles> result = (List<Perfiles>)session.createQuery("select p from Perfiles p").list();
+         session.getTransaction().commit();
+         session.getTransaction().
+        // System.out.println(result.size());
+         
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("anubisPU");
+//        em = emf.createEntityManager();
+//        em.getTransaction().begin();
+//        Query q = em.createQuery("Select a from " + className + " a");
+//        List toRet = q.getResultList();
+//        em.getTransaction().commit();
+//        return toRet;
+        return result;
+    }
+
+//    public static void persist(Object objeto) throws Exception {
+//        
+//        em.getTransaction().begin();
+//        em.persist(objeto);
+//        em.getTransaction().commit();
+//    }
+//
+//    public static void executeUpdate(String sql) throws Exception {
+//        
+//        em.getTransaction().begin();
+//        Query query = em.createNativeQuery(sql);
+//        query.executeUpdate();
+//        em.getTransaction().commit();
+//    }
+//
+//    public static Object executeSingleResult(String sql) throws Exception {
+//        
+//        em.getTransaction().begin();
+//        Query query = em.createNativeQuery(sql);
+//        Object toRet = query.getSingleResult();
+//        em.getTransaction().commit();
+//        return toRet;
+//    }  
+}

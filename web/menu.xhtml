@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--/*
+ * Licensed under the GPL License.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+
+    <h:form>
+        <ice:panelGroup id="menuPanelGroup" style="clear: both">
+            <ice:outputLabel value="Anubis" styleClass="labelTitulo"/>
+            <ice:menuBar id="menuBar"> 
+                <ice:menuItem id="CapasItem"
+                              value="Capas" link="capas.jsf"/>
+                <ice:menuItem id="BasesItem"
+                              value="Bases" link="bases.jsf"/>
+                <ice:menuItem id="perfilesItem"
+                              value="Perfiles" link="perfiles.jsf"/>
+                <ice:menuItem id="Visualizador"
+                              value="Visualizador" link="#{menu.urlIsis}"/>
+            </ice:menuBar>
+            <ice:panelGroup>                
+                <ice:commandLink styleClass="userName underline" value="Cerrar Sesión" action="#{menu.cerrarSesion}"></ice:commandLink>
+                <ice:outputLabel value="#{menu.usuario} | " styleClass="userName" />
+            </ice:panelGroup>
+
+
+        </ice:panelGroup>
+    </h:form>
+
+</html>

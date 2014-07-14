@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * Licensed under the GPL License.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+    <h:head>
+        <link href="./xmlhttp/css/xp/xp.css" rel="stylesheet" type="text/css"/>
+        <link href="css/myStyle.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" > 
+          
+            function submitIfEnter(event){
+                if (event.keyCode == 13){
+                    document.getElementById('loginForm:submit').click();
+                }
+            }
+        </script>
+    </h:head>
+    <h:body>
+        <ice:panelGrid columns="1">            
+            <ice:panelGroup style="position: absolute; top:70px; bottom: 30px; left: 0px; right: 0px;">
+                <div align="center">
+                    <ice:panelGroup styleClass="panelMenu">
+                        <ice:outputLabel value="Login" styleClass="labelLogin"/>
+                    </ice:panelGroup>
+                    <ice:form id="loginForm" partialSubmit="false">
+                        <ice:panelGrid columns="1" styleClass="loginForm">
+                            <ice:outputLabel value="#{login.error}" styleClass="labelError"/>
+                        </ice:panelGrid>
+                        <ice:panelGrid columns="2" styleClass="loginForm">
+                            <ice:outputLabel value="Usuario:" />
+                            <ice:inputText value="#{login.usuario}"></ice:inputText>                            
+                            <ice:outputLabel value="Contraseña:" />
+                            <ice:inputSecret value="#{login.contraseña}" required="true" onkeydown="return submitIfEnter(event)"  />
+
+<!--<h:inputSecret value="#{login.contraseña}" required="true" onkeydown="submitOnEnter()"></h:inputSecret>--> 
+                        </ice:panelGrid>
+                        <ice:panelGrid columns="2" styleClass="loginForm">
+                            <h:panelGroup styleClass="float wrapbutton">
+                                <ice:commandLink id="submit"  value="Login" action="#{login.login}" />
+                                <ice:commandButton  style="padding: 5px; font-weight: bold;" image="/images/Key.png" title="Login" value="Login" action="#{login.login}" ></ice:commandButton>
+                            </h:panelGroup> 
+                        </ice:panelGrid>
+                        <h:commandButton id="loginButton" style="display: none"  action="#{login.login}" ></h:commandButton>
+                    </ice:form>
+                </div>
+            </ice:panelGroup>
+        </ice:panelGrid>
+    </h:body>
+</html>

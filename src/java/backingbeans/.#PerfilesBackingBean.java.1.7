@@ -1,0 +1,579 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package backingbeans;
+
+import com.icesoft.faces.component.ext.HtmlCommandLink;
+import com.icesoft.faces.component.ext.HtmlDataTable;
+import com.icesoft.faces.component.ext.RowSelectorEvent;
+
+import dao.HibernateDao;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIInput;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
+import model.Campos;
+import model.Capas;
+import model.PerfilCampos;
+import model.Perfiles;
+import model.PerfilesCapas;
+
+/**
+ *
+ * @author Camila.Riveron
+ */
+@ManagedBean(name = "perfiles")
+@ViewScoped
+public class PerfilesBackingBean implements Serializable {
+    
+    private List<Perfiles> perfiles;
+    private Perfiles perfilSeleccionado;
+    private PerfilesCapas capaSeleccionada;
+    private List<Capas> capasDisponibles;
+    
+    //Filtro tabla perfiles
+    public String selectedEffectType = "default";
+    public String selectedSearchMode = "contains";
+    
+    //Busqueda Capa Perfil
+    private String busquedaCapaPerfil = "";
+    private HtmlDataTable capasPerfilTable = null;
+    private String[] capasperfil_selectedColumns = new String[]{"nombreCapa"};
+    private int capasPerfil_lastFoundIndex = -1;
+    private boolean caseSensitive = false;
+    
+    //Busqueda Capa
+    private String busquedaCapa = "";
+    private HtmlDataTable capasTable = null;
+    private String[] capas_selectedColumns = new String[]{"nombre"};
+    private int capas_lastFoundIndex = -1;
+    
+    //Agregar nuevo perfil
+    private String nombrePerfil;
+    private Boolean mostrarPopUpAgregarPerfil;
+       
+    //Editar y eliminar Perfil
+    private Perfiles toModify;
+    private int toRemove;
+    private int toEdit;
+    private boolean mostrarPopUpEditarPerfil;
+    private List<PerfilesCapas> capasPerfil;
+    
+    // Campos
+    public HtmlDataTable camposTabla;
+    private PerfilCampos campoEditar;
+    private int campoEditarId;
+    private boolean mostrarPopUpEditarCampo; 
+    private String nombreCampo;
+    
+    //Busqueda Campos
+    private String[] campos_selectedColumns = new String[]{"etiqueta","nombreColumna"};
+    private int campos_lastFoundIndex = -1;
+
+    public PerfilesBackingBean() {
+        try {
+            perfiles = HibernateDao.findAll(Perfiles.class.getName());
+            toModify = new Perfiles();
+            mostrarPopUpEditarPerfil = false;
+            mostrarPopUpAgregarPerfil = false;
+            campoEditar = new PerfilCampos();
+        } catch (Exception ex) {
+            Logger.getLogger(PerfilesBackingBean.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+    }
+
+    public String getNombreCampo() {
+        return nombreCampo;
+    }
+
+    public void setNombreCampo(String nombreCampo) {
+        this.nombreCampo = nombreCampo;
+    }   
+    
+
+    public boolean isMostrarPopUpEditarCampo() {
+        return mostrarPopUpEditarCampo;
+    }
+
+    public void setMostrarPopUpEditarCampo(boolean mostrarPopUpEditarCampo) {
+        this.mostrarPopUpEditarCampo = mostrarPopUpEditarCampo;
+    }   
+    
+    public PerfilCampos getCampoEditar() {
+        return campoEditar;
+    }
+
+    public void setCampoEditar(PerfilCampos campoEditar) {
+        this.campoEditar = campoEditar;
+    }
+
+    public int getCampoEditarId() {
+        return campoEditarId;
+    }
+
+    public void setCampoEditarId(int campoEditarId) {
+        this.campoEditarId = campoEditarId;
+    }   
+    
+
+    public HtmlDataTable getCamposTabla() {
+        return camposTabla;
+    }
+
+    public void setCamposTabla(HtmlDataTable camposTabla) {
+        this.camposTabla = camposTabla;
+    }   
+    
+
+    public PerfilesCapas getCapaSeleccionada() {
+        return capaSeleccionada;
+    }
+
+    public void setCapaSeleccionada(PerfilesCapas capaSeleccionada) {
+        this.capaSeleccionada = capaSeleccionada;
+    }
+
+    public String getBusquedaCapa() {
+        return busquedaCapa;
+    }
+
+    public void setBusquedaCapa(String busquedaCapa) {
+        this.busquedaCapa = busquedaCapa;
+    }
+
+    public HtmlDataTable getCapasTable() {
+        return capasTable;
+    }
+
+    public void setCapasTable(HtmlDataTable capasTable) {
+        this.capasTable = capasTable;
+    }
+
+    public String[] getCapas_selectedColumns() {
+        return capas_selectedColumns;
+    }
+
+    public void setCapas_selectedColumns(String[] capas_selectedColumns) {
+        this.capas_selectedColumns = capas_selectedColumns;
+    }
+
+    public int getCapas_lastFoundIndex() {
+        return capas_lastFoundIndex;
+    }
+
+    public void setCapas_lastFoundIndex(int capas_lastFoundIndex) {
+        this.capas_lastFoundIndex = capas_lastFoundIndex;
+    }
+
+    public String getBusquedaCapaPerfil() {
+        return busquedaCapaPerfil;
+    }
+
+    public void setBusquedaCapaPerfil(String busquedaCapaPerfil) {
+        this.busquedaCapaPerfil = busquedaCapaPerfil;
+    }
+
+    public String[] getCapasperfil_selectedColumns() {
+        return capasperfil_selectedColumns;
+    }
+
+    public void setCapasperfil_selectedColumns(String[] capasperfil_selectedColumns) {
+        this.capasperfil_selectedColumns = capasperfil_selectedColumns;
+    }
+
+    public int getCapasPerfil_lastFoundIndex() {
+        return capasPerfil_lastFoundIndex;
+    }
+
+    public void setCapasPerfil_lastFoundIndex(int capasPerfil_lastFoundIndex) {
+        this.capasPerfil_lastFoundIndex = capasPerfil_lastFoundIndex;
+    }
+
+    public HtmlDataTable getCapasPerfilTable() {
+        return capasPerfilTable;
+    }
+
+    public void setCapasPerfilTable(HtmlDataTable capasPerfilTable) {
+        this.capasPerfilTable = capasPerfilTable;
+    }
+
+    public boolean isCaseSensitive() {
+        return caseSensitive;
+    }
+
+    public List<Capas> getCapasDisponibles() {
+        return capasDisponibles;
+    }
+
+    public Perfiles getPerfilSeleccionado() {
+        return perfilSeleccionado;
+    }
+
+    public List<PerfilesCapas> getCapasPerfil() {
+        return capasPerfil;
+    }
+
+    public void setCapasPerfil(List<PerfilesCapas> capasPerfil) {
+        this.capasPerfil = capasPerfil;
+    }
+
+    public void setNombrePerfil(String nombrePerfil) {
+        this.nombrePerfil = nombrePerfil;
+    }
+
+    public String getNombrePerfil() {
+        return nombrePerfil;
+    }
+
+    public List<Perfiles> getPerfiles() {
+        return perfiles;
+    }
+
+    public boolean getMostrarPaginadoPerfiles() {
+        if (perfiles != null) {
+            return perfiles.size() > 10;
+        }
+        return false;
+    }
+
+    public Boolean getMostrarPopUpAgregarPerfil() {
+        return mostrarPopUpAgregarPerfil;
+    }
+
+    public void setMostrarPopUpAgregarPerfil(Boolean mostrarPopUpAgregarPerfil) {
+        this.mostrarPopUpAgregarPerfil = mostrarPopUpAgregarPerfil;
+    }
+
+    public boolean isMostrarPopUpEditarPerfil() {
+        return mostrarPopUpEditarPerfil;
+    }
+
+    public void setMostrarPopUpEditarPerfil(boolean mostrarPopUpEditarPerfil) {
+        this.mostrarPopUpEditarPerfil = mostrarPopUpEditarPerfil;
+    }
+
+    public Perfiles getToModify() {
+        return toModify;
+    }
+
+    public void setToModify(Perfiles toModify) {
+        this.toModify = toModify;
+    }
+
+    public int getToRemove() {
+        return toRemove;
+    }
+
+    public void setToRemove(int toRemove) {
+        this.toRemove = toRemove;
+    }
+
+    public int getToEdit() {
+        return toEdit;
+    }
+
+    public void setToEdit(int toEdit) {
+        this.toEdit = toEdit;
+    }
+
+    public void mostrarAgregarPerfil() {
+        setMostrarPopUpAgregarPerfil(true);
+    }
+
+    public void ocultarAgregarPerfil() {
+        setMostrarPopUpAgregarPerfil(false);
+        nombrePerfil = "";
+    }
+
+    public void mostrarEditarPerfil() {
+        toModify = getPerfilById(toEdit);
+        setMostrarPopUpEditarPerfil(true);
+    }
+
+    public void ocultarEditarPerfil() {
+        setMostrarPopUpEditarPerfil(false);
+    }
+
+    public void agregarPerfil() {
+        try {
+            if (!nombrePerfil.equals("")) {
+                Perfiles perfil = new Perfiles();
+                perfil.setNombre(nombrePerfil);
+                nombrePerfil = "";
+                HibernateDao.saveOrUpdate(perfil);
+                perfiles = HibernateDao.findAll(Perfiles.class.getName());
+                toModify = new Perfiles();
+                ocultarAgregarPerfil();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void modificarPerfil() {
+        try {
+            if (toModify != null && !"".equals(toModify.getNombre())) {
+                HibernateDao.saveOrUpdate(toModify);
+                ocultarEditarPerfil();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void findCapaPerfil() {
+        if (!busquedaCapaPerfil.isEmpty()) {
+            HtmlDataTable.SearchType type = null;
+            type = HtmlDataTable.SearchType.CONTAINS;
+
+            int newFoundIndex = capasPerfilTable.findRow(busquedaCapaPerfil, capasperfil_selectedColumns, capasPerfil_lastFoundIndex + 1, type, caseSensitive);
+
+            capasPerfil_lastFoundIndex = newFoundIndex;
+            if (newFoundIndex != -1) {
+                capasPerfilTable.navigateToRow(capasPerfil_lastFoundIndex);
+            }
+        }
+    }
+
+    public void resetCapasPerfilBusqueda(javax.faces.event.ActionEvent e) {
+        capasPerfil_lastFoundIndex = -1;
+    }
+
+    public void findCapa() {
+        if (!busquedaCapa.isEmpty()) {
+            HtmlDataTable.SearchType type = null;
+            type = HtmlDataTable.SearchType.CONTAINS;
+
+            int newFoundIndex = capasTable.findRow(busquedaCapa, capas_selectedColumns, capas_lastFoundIndex + 1, type, caseSensitive);
+
+            capas_lastFoundIndex = newFoundIndex;
+            if (newFoundIndex != -1) {
+                capasTable.navigateToRow(capas_lastFoundIndex);
+            }
+        }
+    }
+    
+    public void findCampo() {
+        if (!nombreCampo.isEmpty()) {
+            HtmlDataTable.SearchType type = null;
+            type = HtmlDataTable.SearchType.CONTAINS;
+
+            int newFoundIndex = camposTabla.findRow(nombreCampo, campos_selectedColumns, campos_lastFoundIndex + 1, type, caseSensitive);
+
+            campos_lastFoundIndex = newFoundIndex;
+            if (newFoundIndex != -1) {
+                camposTabla.navigateToRow(campos_lastFoundIndex);
+            }
+        }
+    }
+
+    public void resetCapasBusqueda(javax.faces.event.ActionEvent e) {
+        capas_lastFoundIndex = -1;
+    }
+
+    public void actualizarCapas() {
+        capasPerfil = new ArrayList();
+        if (perfilSeleccionado != null) {
+            List<Capas> capasAll = HibernateDao.findAll(Capas.class.getName());
+
+            for (PerfilesCapas pc : perfilSeleccionado.getPerfilesCapasList()) {
+                capasAll.remove(pc.getCapaId());
+                capasPerfil.add(pc);
+            }
+            capasDisponibles = capasAll;
+        }
+    }
+
+    public void selectionListener(RowSelectorEvent event) {
+
+        perfilSeleccionado = perfiles.get(event.getRow());
+        actualizarCapas();
+    }
+
+    public void perfilSeleccionado(ActionEvent event) {
+        HtmlCommandLink p = (HtmlCommandLink) event.getComponent();
+        Perfiles perfil = (Perfiles) p.getAttributes().get("perfil");
+        perfilSeleccionado = perfil;
+        actualizarCapas();
+    }
+
+    public void capaSeleccionada(ActionEvent event) {
+        HtmlCommandLink p = (HtmlCommandLink) event.getComponent();
+        PerfilesCapas capa = (PerfilesCapas) p.getAttributes().get("capaPerfil");
+        capaSeleccionada = capa;
+        actualizarCampos();
+    }
+
+    public void actualizarCampos() {
+    }
+
+    private Perfiles getPerfilById(int id) {
+        for (Perfiles currentItem : perfiles) {
+            if (id == currentItem.getId()) {
+                return currentItem;
+            }
+        }
+        return null;
+    }
+
+    public void yesDeletePerfil() {
+        Perfiles removePerfil = getPerfilById(toRemove);
+
+        if (removePerfil != null) {
+            
+            if(perfilSeleccionado!=null){
+                for(PerfilesCapas c: perfilSeleccionado.getPerfilesCapasList())
+                {
+                    //c.desasociarPerfilCapa(removePerfil,c.getCapaId());
+                     if(capaSeleccionada!=null && capaSeleccionada.equals(c))
+                    {
+                        capaSeleccionada = new PerfilesCapas();
+                    }            
+                }           
+
+                if(perfilSeleccionado.equals(removePerfil))
+                {
+                    perfilSeleccionado = null;
+                }            
+            }
+            
+            perfiles.remove(removePerfil);
+            HibernateDao.delete(removePerfil);            
+            capasDisponibles = new ArrayList();
+            capasPerfil = new ArrayList();
+        }
+    }
+
+    public void capasSelectionListener(RowSelectorEvent event) {
+
+        List seleccionados = event.getSelectedRows();
+
+    }
+
+    public void agregarCapaPerfil(ActionEvent event) {
+        HtmlCommandLink p = (HtmlCommandLink) event.getComponent();
+        Capas c = (Capas) p.getAttributes().get("capa");
+
+        PerfilesCapas perfilCapa = new PerfilesCapas();
+        perfilCapa.asociarPerfilCapa(perfilSeleccionado, c);
+        perfilCapa.setVisible(true);        
+        getCampos(perfilCapa, c);        
+        perfilCapa = (PerfilesCapas) HibernateDao.saveOrUpdate(perfilCapa);
+
+        capasPerfil.add(perfilCapa);
+        capasDisponibles.remove(c);
+    }
+    
+    private void getCampos(PerfilesCapas perfil, Capas capa)
+    {
+        if(capa!=null){
+        for(Campos campo: capa.getCamposList())
+        {
+            PerfilCampos campoNuevo = new PerfilCampos();
+            campoNuevo.setCriterioBusqueda(campo.getCriterioBusqueda());
+            campoNuevo.setEtiqueta(campo.getEtiqueta());
+            campoNuevo.setCampoId(campo);
+            campoNuevo.setPerfilCapaId(perfil);            
+            perfil.agregarCampo(campoNuevo); 
+            campo.agregarPerfilCampo(campoNuevo);
+           
+        } 
+        }
+        
+    }
+
+    public void quitarCapaPerfil(ActionEvent event) {
+        System.out.println("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        HtmlCommandLink p = (HtmlCommandLink) event.getComponent();
+        PerfilesCapas c = (PerfilesCapas) p.getAttributes().get("capa");
+        
+//        capasPerfil.remove(c);
+
+        c.desasociarPerfilCapa(perfilSeleccionado, c.getCapaId());
+
+        if(capaSeleccionada!=null && capaSeleccionada.equals(c))
+        {
+            capaSeleccionada = new PerfilesCapas();
+        }      
+        capasPerfil = new LinkedList<PerfilesCapas>();
+        System.out.println("holaaa");
+        HibernateDao.delete(c);
+        
+        actualizarCapas();
+    }
+
+    public void actualizarCapaPerfil(ValueChangeEvent event) {
+        UIInput p = (UIInput) event.getComponent();
+        PerfilesCapas perfil = (PerfilesCapas) p.getAttributes().get("capaPerfil");
+        perfil.setVisible((Boolean) event.getNewValue());
+        HibernateDao.saveOrUpdate(perfil);
+    }
+    
+    public void mostrarEditarCampo() {
+        campoEditar = getCampoById(campoEditarId);
+        setMostrarPopUpEditarCampo(true);
+    } 
+    
+    private PerfilCampos getCampoById(int id) {
+        if(capaSeleccionada!=null){
+            for (PerfilCampos currentItem : capaSeleccionada.getPerfilCamposList()) {
+                if (id == currentItem.getId()) {
+                    return currentItem;
+                }
+            }
+        }
+        return null;
+    }
+     public void modificarCampo() {
+        try {
+            if (campoEditar != null ) {
+                HibernateDao.saveOrUpdate(campoEditar);
+                ocultarEditarCampo();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    } 
+     
+      public void ocultarEditarCampo() {
+         setMostrarPopUpEditarCampo(false);
+    }
+      
+      public List<SelectItem> getCriteriosDeBusqueda() {
+        List<SelectItem> lista = new ArrayList<SelectItem>();
+        lista.add(new SelectItem("Like"));
+        lista.add(new SelectItem("Igual"));
+        lista.add(new SelectItem("Entre"));
+        lista.add(new SelectItem("Mayor"));
+        lista.add(new SelectItem("Menor"));
+        lista.add(new SelectItem("Exacto"));
+        lista.add(new SelectItem("Distinto"));
+        return lista;
+    }
+      
+      public void resetearCapaSeleccionada()
+      {
+          capaSeleccionada = new PerfilesCapas();
+      }
+      
+      public void resetearPerfilSeleccionado(){
+          capaSeleccionada = new PerfilesCapas();
+          perfilSeleccionado = null;
+      }
+    
+}
+

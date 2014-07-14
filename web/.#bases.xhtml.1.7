@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+/*
+ * Licensed under the GPL License.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <link href="./xmlhttp/css/xp/xp.css" rel="stylesheet" type="text/css"/>
+        <link href="css/myStyle.css" rel="stylesheet" type="text/css"/>        
+    </h:head>
+    <h:body>
+        <h:form id="formularioBases">
+            <ace:confirmationDialog id="confirmDeleteBaseDialog"
+                                    widgetVar="confirmationBases"
+                                    message="Está seguro que desea eliminar la Base seleccionada? Se eliminará toda la información asociada."
+                                    header="Borrar Capa Base"
+                                    width="370"
+                                    height="190"
+                                    closable="true"
+                                    position="center">
+                <h:panelGrid columns="2" styleClass="centeredPanelGrid">
+                    <h:commandButton id="siborrarBase" value="Sí" onclick="confirmationBases.hide();" action="#{bases.yesDeleteBase}"/>
+                    <h:commandButton id="noborrarBase" value="No" onclick="confirmationBases.hide()" />
+                </h:panelGrid>
+            </ace:confirmationDialog>
+
+            <ice:panelPopup id="agregarBasePopUp" modal="true" autoCentre="true" resizable="true" visible="#{bases.mostrarPopUpAgregarBase}" >
+                <f:facet name="header" ><div class="header">Agregar Capa Base<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{bases.ocultarAgregarBase}" ></ice:commandButton></div></f:facet>
+                <f:facet name="body">
+                    <ice:panelGroup>   
+                        <ice:messages id="erroresBase" styleClass="panelErrores"/>
+                        <h:panelGrid columns="2" styleClass="panelGrid50" style="vertical-align: top;">                                                      
+                            <h:panelGrid  styleClass="panelGrid40 float" style="height: 100%; float: left">   
+                                <ice:panelGroup   >
+                                    <ice:panelGrid columns="1">
+                                        Indique la etiqueta
+                                        <h:inputText id="nombreBaseNueva" value="#{bases.nombreBase}" />   
+                                    </ice:panelGrid> 
+                                </ice:panelGroup> 
+                            </h:panelGrid>
+
+                            <h:panelGroup styleClass="float wrapbutton" style="clear: both; width: 130px;">
+                                <ice:commandLink value="Agregar Base" action="#{bases.agregarBase}" />
+                                <ice:commandButton image="/images/Save.png" title="Agregar Base" value="Agregar" action="#{bases.agregarBase}" ></ice:commandButton>
+                            </h:panelGroup>  
+                        </h:panelGrid>
+                    </ice:panelGroup>
+                </f:facet>
+            </ice:panelPopup>
+
+            <ice:panelPopup id="modificarBasePopUp" modal="true" autoCentre="true" resizable="false" visible="#{bases.mostrarPopUpEditarBase}" >
+                <f:facet name="header"><div class="header">Editar Base<ice:commandButton styleClass="closableButton" image="/images/Cancel16.png" action="#{bases.ocultarEditarBase}"></ice:commandButton></div></f:facet>
+                <f:facet name="body">
+                    <ice:panelGroup  styleClass="marginleft15">
+                        <ice:panelGrid columns="2">
+                            <ice:outputText value="Nombre:"/>
+                            <h:inputText id="nombreCapaBaseToModify"  value="#{bases.toModify.etiqueta}"/>                                                
+                            <ice:outputText value=""/>
+
+                            <h:panelGroup styleClass="float wrapbutton" style="clear: both; ">
+                                <ice:commandLink  id="modifCapaBase" value="Guardar" action="#{bases.modificarBase}" />
+                                <ice:commandButton image="/images/Save.png" title="Guardar base" value="Guardar base" action="#{bases.modificarBase}" ></ice:commandButton>
+                            </h:panelGroup>                                    
+                        </ice:panelGrid> 
+                    </ice:panelGroup> 
+                </f:facet>
+            </ice:panelPopup>
+
+            <ice:panelGrid columns="1">
+                <ice:panelGroup styleClass="panelMenu" >
+                    <ui:include src="menu.xhtml" /> 
+                </ice:panelGroup>
+                <ice:panelGroup style="position: absolute; top:70px; bottom: 30px; left: 0px; right: 0px;">
+                    <ice:panelDivider id="divisorVertical"
+                                      orientation="vertical"
+                                      dividerPosition="30"
+                                      style="width: 100%; height: 98%;"
+                                      styleClass="divider">
+                        <f:facet name="first">
+                            <ice:panelGroup  style="margin: 10px; height: 95%; position: relative" styleClass="divTablaCapas"> 
+
+
+                                <!-- *********************************************************** -->
+                                <!-- ***************** TABLA DE BASES *********************** -->
+                                <!-- *********************************************************** -->
+
+                                <ice:dataTable id="tablaDeCapasBase" value="#{bases.bases}"
+                                               var="base" 
+                                               styleClass="tabla tablaCapas"
+                                               width="60%"
+                                               rowClasses="myrow">
+
+                                    <ice:column>     
+                                        <f:facet name="header">
+                                            <ice:outputText value="ID"/>
+                                        </f:facet>
+                                        <ice:outputText value="#{base.id}"/>
+                                    </ice:column>
+                                    <ice:column>
+                                        <f:facet name="header">
+                                            <ice:outputText value="Nombre"/>
+                                        </f:facet>
+
+                                        <h:commandLink action="#{bases.seleccionarBase}" value="#{base.etiqueta}" >
+                                            <f:setPropertyActionListener target="#{bases.baseEnCurso}"
+                                                                         value="#{base}"/>
+                                        </h:commandLink>
+                                    </ice:column>
+
+                                    <ice:column styleClass="columnMedium">
+                                        <f:facet name="header">Editar</f:facet>
+                                        <h:commandButton image="/images/Pen16.png"
+                                                         alt="Editar" title="Editar"
+                                                         styleClass="botonTabla"
+                                                         action="#{bases.mostrarEditarBase}"
+                                                         rendered="#{!base.esDefault}">
+                                            <f:setPropertyActionListener target="#{bases.toEdit}"
+                                                                         value="#{base.id}"/>
+                                        </h:commandButton>
+                                    </ice:column>
+                                    <ice:column styleClass="columnSmall" >
+                                        <f:facet name="header">Borrar</f:facet>
+                                        <h:commandButton image="/images/CancelOrange.png"
+                                                         alt="Borrar" title="Borrar"
+                                                         styleClass="botonTabla"
+                                                         onclick="confirmationBases.show()" rendered="#{!base.esDefault}">
+                                            <f:setPropertyActionListener target="#{bases.toRemove}"
+                                                                         value="#{base.id}"/>
+                                        </h:commandButton>
+                                    </ice:column>
+                                </ice:dataTable>
+                                <ice:panelGroup styleClass="footerCapas">
+                                    <ice:commandButton image="/images/Plus.png" title="Agregar base" styleClass="agregarButton" value="Agregar Base"  
+                                                       action="#{bases.mostrarAgregarBase}"
+                                                       style="vertical-align: bottom!important"></ice:commandButton>
+                                </ice:panelGroup>
+                            </ice:panelGroup>
+
+                        </f:facet>
+
+                        <f:facet name="second">
+                            <ice:panelGroup style="padding: 10px; height: 100%;overflow: hidden;" rendered="#{bases.visibilidadCapas}">
+
+                                <!-- *********************************************************** -->
+                                <!-- ***************** TABLA DE CAPAS ************************* -->
+                                <!-- *********************************************************** -->
+                                <div style="width: 100%; height: 100%; overflow: auto">
+                                    
+                                
+                                <ice:panelGroup rendered="#{bases.visibilidadCapas}" >
+                                    <ice:panelGroup  styleClass="header headerTabla" style="margin-top: 5px;">
+                                        Capas de base "#{bases.baseEnCurso.etiqueta}"
+                                    </ice:panelGroup>    
+
+                                    <ice:panelGroup styleClass="panelMitadIzq" style="width: 58%;">
+                                        <ice:dataTable value="#{bases.baseEnCurso.baseCapaList}" var="capa" id="capasSeleccionadas" width="100%" styleClass="tabla tablaConHeader" rowClasses="myrow">
+                                            <ice:column style="width: 65px;">
+                                                <f:facet name="header">
+                                                    Orden
+                                                </f:facet>
+                                                <ice:panelGroup>
+                                                    <ice:commandButton id="subirOrdenButton" action="#{bases.subirOrdenCapa}" image="/images/up.png" alt="Antes" title="Antes" styleClass="botonOrden" >
+                                                        <f:setPropertyActionListener target="#{bases.capaAOrdenar}" value="#{capa}" />
+                                                    </ice:commandButton>
+                                                    <ice:commandButton id="bajarOrdenButton" action="#{bases.bajarOrdenCapa}" image="/images/down.png" alt="Después" title="Después" styleClass="botonOrden" >
+                                                        <f:setPropertyActionListener target="#{bases.capaAOrdenar}" value="#{capa}"/>
+                                                    </ice:commandButton>
+                                                </ice:panelGroup>
+                                            </ice:column>
+                                            <ice:column>
+                                                <f:facet name="header">
+                                                    Nombre
+                                                </f:facet>                                                        
+                                                <ice:outputText value="#{capa.capaId.nombre}"/>
+                                            </ice:column>
+
+                                            <ice:column>
+                                                <f:facet name="header">
+                                                    Eliminar
+                                                </f:facet>
+                                                <h:commandLink styleClass="perfilLink" value="Eliminar" action="#{bases.eliminarCapa}">
+
+                                                    <f:setPropertyActionListener target="#{bases.capaAEliminar}"
+                                                                                 value="#{capa}"/>
+                                                </h:commandLink>
+                                            </ice:column>
+                                        </ice:dataTable>
+                                    </ice:panelGroup>
+                                    <ice:panelGroup  styleClass="panelMitadDer" style="width: 38%;">
+                                        <ice:dataTable value="#{bases.capasDisponibles}" var="capaD" id="capasDisponibles" width="100%" styleClass="tabla tablaConHeader" rowClasses="myrow">
+                                            <ice:column>
+                                                <f:facet name="header">
+                                                    Nombre
+                                                </f:facet>
+                                                #{capaD.nombre}
+                                            </ice:column>                                                   
+                                            <ice:column>
+                                                <f:facet name="header">
+                                                    Agregar
+                                                </f:facet>
+                                                <h:commandLink styleClass="perfilLink" value="Agregar" action="#{bases.agregarCapa}">
+                                                    <f:setPropertyActionListener target="#{bases.capaAAgregar}" value="#{capaD}"/>
+                                                </h:commandLink>                                                
+                                            </ice:column>
+                                        </ice:dataTable>
+                                    </ice:panelGroup>
+                                </ice:panelGroup>
+                                    </div>
+                            </ice:panelGroup>
+                        </f:facet>
+                    </ice:panelDivider>
+                </ice:panelGroup>
+            </ice:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+

@@ -1,0 +1,133 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package dao;
+
+import backingbeans.SessionBean;
+import java.util.List;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import model.Capas;
+import model.GeometryColumns;
+import model.Perfiles;
+import model.PerfilesCapas;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+
+/**
+ *
+ * @author Diego.Gonzalez
+ */
+public class HibernateDao {
+
+//    public static HibernateDao instance = null;
+    private static Session session = null;
+
+    protected HibernateDao() {
+    }
+
+//    public static HibernateDao getInstance() {
+//        if (instance == null) {
+//            instance = new HibernateDao();
+//        }
+//        return instance;
+//    }
+    
+    /**
+     * * Busca en la base las tablas con componentes geográficos **
+     */
+    public static List<String> getTablasDisponibles() {
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();
+        List<String> result = (List<String>) s.createQuery("SELECT DISTINCT f_table_name FROM geometry_columns").list();        
+        s.getTransaction().commit();
+        return result;
+    }
+    
+    /**
+     * * Busca en la base las tablas con componentes geográficos **
+     */
+//    public static List<String> getTablasDisponibles() {
+//        Session s = HibernateDao.getSession();
+//        s.beginTransaction();
+//        List<String> result = (List<String>) s.createQuery("SELECT DISTINCT f_table_name FROM geometry_columns").list();        
+//        s.getTransaction().commit();
+//        return result;
+//    }
+    
+//    public static List<String> getTablasDisponibles() {
+//        Session s = HibernateDao.getSession();
+//        s.beginTransaction();
+//        List<String> result = (List<String>) s.createQuery("SELECT DISTINCT f_table_name FROM geometry_columns").list();        
+//        s.getTransaction().commit();
+//        return result;
+//    }
+    
+    public static List<PerfilesCapas> getPerfilByName(String perfilNombre)
+    {
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();        
+        Query query = s.createQuery("SELECT p from PerfilesCapas p WHERE p.perfilId.nombre = ?");
+        query.setString(0, perfilNombre);
+        List<PerfilesCapas> result = (List<PerfilesCapas>) query.list();
+        s.getTransaction().commit();
+        return result;
+    }
+
+    public static List findAll(String className) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  " + className);
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();
+        List result = (List) s.createQuery("select p from " + className + " p").list();
+        s.getTransaction().commit();
+        return result;
+    }
+
+    public static Object getById(String className, Integer id) {
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();
+        List result = (List) s.createQuery("select p from " + className + " p where id = " + id).list();
+        s.getTransaction().commit();
+        return result.get(0);
+    }
+    
+    public static Object saveOrUpdate(Object entity) {
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();
+        //s.saveOrUpdate(entity);
+        Integer a = (Integer) s.save(entity);
+        s.getTransaction().commit();
+
+        Object o = getById(entity.getClass().getName(), a);
+        return o;
+        //s.close(); 
+    }
+
+    public static void delete(Object entity) {
+        Session s = HibernateDao.getSession();
+        s.beginTransaction();
+        s.delete(entity);
+        s.getTransaction().commit();
+        //s.close();        
+    }
+
+    public static Session getSession() {
+
+        SessionBean sessionBean = findBean("SessionBean");
+        return sessionBean.getSession();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T findBean(String beanName) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest)context.getExternalContext().getRequest();
+        request.getParameter("");
+        
+        return (T) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
+}

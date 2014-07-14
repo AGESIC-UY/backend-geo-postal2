@@ -1,0 +1,809 @@
+/* 
+    Document   : myStyle
+    Created on : 28/12/2012, 01:11:57 PM
+    Author     : Camila.Riveron
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+
+}
+
+body{
+    color: #7A7A7A;    
+    background-image: url("./images/body.jpg");
+    background-repeat: repeat;
+}
+
+html, body
+{
+    height: 100%;
+    overflow: hidden;
+}
+
+
+.ui-panel-titlebar, .ui-widget-header, .ui-corner-all{
+    /* display: none !important;*/
+}
+
+
+
+.groovybutton
+{
+    font-size:12px;
+    font-family:Verdana,sans-serif;
+    color:#FFFFFF;
+    background-color:#FF9900;
+    border-style:double;
+    border-color:#FF9933;
+    border-width:1px;
+    margin-top: 10px;
+    float: right;
+
+    -moz-box-shadow: 2px 2px 7px #828282;
+    -webkit-box-shadow: 2px 2px 7px #828282;
+    box-shadow: 2px 2px 7px #828282;
+    -moz-border-radius: 3px; /* Firefox */
+    -webkit-border-radius: 3px; /* Safari, Chrome */
+    border-radius: 3px; /* CSS3 */
+}
+
+
+
+
+.header{
+    padding-left: 10px;
+    font-weight: bold;
+    color: #D47C02;
+}
+
+.divCentral {
+    width: 1000px; margin-left: auto; margin-right: auto;
+
+}
+
+.minheight {
+    min-height: 800px;    
+}
+
+.central{
+    margin-left: auto; margin-right: auto;
+}
+
+.graphicImage{    
+    width: 18px; height: 18px; border: none;
+}
+
+.clear{
+    clear: both;    
+}
+
+.iceDatTblCol, .iceDatTblCol1, .iceDatTblCol2 {
+    border-bottom: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    color: #636363;
+    padding: 3px 5px;
+    text-align: left;
+}
+
+
+.iceCmdLnk, .iceOutLnk {
+    color: #636363;
+    font-weight: normal;
+    text-decoration: none;
+}
+.iceOutTxt, .iceOutLbl {
+    color: #636363;
+    font-family: Arial,Helvetica,sans-serif;
+    padding: 2px 0;
+}
+
+
+.tabla
+{
+    width:100%; min-height: 300px;
+    color: #636363 !important;
+}
+
+.tabla .columnMedium{
+    width: 50px;
+    text-align: center;
+
+}
+.tabla .columnSmall{
+    width: 18px;
+    text-align: center;
+}
+.tabla .columnBig{
+    width: 70px;
+}
+.tabla .boton{
+    height: 16px; width: 16px;
+}
+
+.tabla .myrow:hover /* it works in firefox only*/
+{
+    background:#E9F3F7;   
+    cursor:pointer;
+}
+
+.tablasdisponibles{
+    width: 200px;
+
+}
+
+
+.saveButton{
+    margin-top: 180px;
+    float: right;     
+}
+
+.perfilLink{
+    width: 100% ;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.boton24{
+    height: 24px; width: 24px;
+    -moz-box-shadow: 1px 1px 1px #FFFFFF;
+    -webkit-box-shadow: 1px 1px 1px #FFFFFF;
+    box-shadow: 1px 1px 1px #FFFFFF;
+    border: 1px solid #999999;
+    -moz-border-radius: 4px; /* Firefox */
+    -webkit-border-radius: 4px; /* Safari, Chrome */
+    border-radius: 4px; /* CSS3 */
+}
+
+.boton{
+    height: 20px;
+    width: 20px;
+}
+
+.botonOrden{
+    float: left;
+    padding-left: 10px;
+    background-color: none;
+}
+
+.marginleft15{    
+    margin-left: 15%
+}
+
+.marginleft50{    
+    margin-left: 50%
+}
+
+.borderSalmon{
+    border: lightsalmon solid    
+}
+
+.panelGrid100{    
+    width:100%; border:0
+}
+
+.panelGrid100px{    
+    width:100px; border:0
+}
+
+.panelGrid50px{    
+    width:50px; border:0
+}
+
+.panelGrid80{    
+    width:80%; border:0
+}
+
+.panelGrid80px{    
+    width:80px; border:0
+}
+
+.panelGrid50{    
+    width:50%; border:0
+}
+
+.panelGrid40{    
+    width:40%; border:0
+}
+
+.panelGrid30{    
+    width:30%; border:0
+}
+
+.panelGrid20{    
+    width:20%; border:0
+}
+
+.panelGrid350{    
+    width:350px; border:0
+}
+
+.panelGrid400{    
+    width:400px; border:0
+}
+
+.arrowButton{
+    margin-left: auto; margin-right: auto; margin-top:auto
+}
+
+.barrabusqueda{    
+    width:100%; border:0; margin-top: 0px
+}
+
+.float{
+    float:left
+
+}
+
+.flechas{
+    margin-left: 40px;
+    margin-top: 90px;    
+}
+
+.agregarButton{
+    height: 32px;
+    width: 32px;
+    float:right;
+    margin-right: 20px;
+    border: 1px solid #BDBDBD;
+}
+
+.agregarButtonRight{
+    height: 20px;
+    width: 20px;
+    float:right;
+}
+
+.agregarCapaButton{
+    height: 25px;
+    width: 25px;
+    float:left;
+    margin-bottom: 20px;
+}
+
+.checkboxTabla{
+    margin-left: 40%;
+}
+
+.closableButton {
+    border: 1px solid #999999;
+    float: right;
+    height: 20px;
+    margin-right: 10px;
+    width: 20px;
+    -moz-box-shadow: 1px 1px 1px #FFFFFF;
+    -webkit-box-shadow: 1px 1px 1px #FFFFFF;
+    box-shadow: 1px 1px 1px #FFFFFF;
+}
+
+.icePnlPopHdr, .icePnlTlTipHdr {
+    background-color: rgb(255,165,79);
+    margin-left: 5px;
+    /*background-image: url("./css-images/window_top.gif");*/
+    background-image: none;
+}
+
+.icePnlPopHdr{
+    border-bottom: 1px solid #999999;
+}
+
+.separador{
+    width: 95%; clear: both; 
+    margin: 15px;
+    color: #F5D4C4;
+}
+
+h3{
+    background-color: #E8890C;
+    color: #ffffff;
+    padding-left: 30px; 
+    padding-top: 5px;
+    background-image: url('images/bookmark.png');
+    background-size: 10% 100%;
+    background-repeat:no-repeat;
+    background-position: 2% 10%;
+
+}
+
+.h3{
+    background-color: #E8890C;
+    color: #ffffff;
+    width: 20%;
+    padding-left: 30px; 
+    padding-right: 10px; 
+    padding-top: 5px;    
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    background-image: url('images/bookmark.png');
+    background-size: 10% 100%;
+    background-repeat:no-repeat;
+    background-position: 2% 8%
+}
+
+/*h3:before{
+    content: url('images/bookmark.png');    
+    height: 30px;
+    width: 20px;
+}*/
+
+.h4{
+    background-color: #F2AB4E;
+    color: #ffffff;
+    width: 20%;
+    padding-left: 10px;
+    margin: 10px;
+}
+
+.span{
+    font-size: 10px;
+
+}
+
+.legend{
+    font-size: 18px;   
+    margin: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.agregarCapaPaso{ 
+    margin-top: 0%;
+}
+
+.nombreCapa{
+    margin-top: 50px;
+    margin-left: 15px;    
+}
+
+floatRight{
+    float: right;
+}
+
+iceRowSel{
+
+} 
+iceRowSelSelected {
+    background-color: #FCDCAE; 
+}
+iceRowSelMouseOver {}
+iceRowSelSelectedMouseOver {}
+
+.listoButton{
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+.panelMitadDer{
+    /*padding: 10px;*/
+
+    float: right;
+    margin: 0px;
+}
+.panelMitadIzq{
+    /*padding: 10px;*/
+    float: left;
+    margin: 0px;
+}
+.iceDatTbl{
+    margin: 1px;
+}
+
+
+.tablaPerfiles th{
+    display: none;
+    -moz-border-radius: 7px; /* Firefox */
+    -webkit-border-radius: 7px; /* Safari, Chrome */
+    border-radius: 7px; /* CSS3 */
+}
+
+.tablaPerfiles{
+    background-color: #D9ECF4;
+    color: #374073 !important;
+}
+
+.tablaPerfiles tr:hover{
+    background-color: #C1DBE6 !important;
+    color: #374073 !important;
+}
+
+
+.tablaPerfiles td{
+    border-left: none;
+    border-right:  none;
+    border-bottom: 1px solid #BBD3DA;
+    border-top: 1px solid #FFFFFF;
+    padding-right: 10px;
+}
+
+.tablaPerfiles a{
+    color: #004458;
+    padding-left: 10px;
+}
+
+.tablaPefiles{
+    border: 0px !important;
+    border-width: 0px !important;
+    -moz-box-shadow: 2px 2px 7px #000000;
+    -webkit-box-shadow: 2px 2px 7px #000000;
+    box-shadow: 2px 2px 7px #000000;
+}
+
+.divTablaPerfiles{
+    background-color: #D9ECF4;
+    border: 1px solid #BBD3DA;  
+    padding-right: 1px;
+    -moz-border-radius: 7px; /* Firefox */
+    -webkit-border-radius: 7px; /* Safari, Chrome */
+    border-radius: 7px; /* CSS3 */
+    overflow-x: hidden!important;
+    overflow-y: auto!important;
+    -moz-box-shadow: 2px 2px 7px #000000;
+    -webkit-box-shadow: 2px 2px 7px #000000;
+    box-shadow: 2px 2px 7px #000000;
+
+}
+
+
+
+.divTablaCapas{
+    background-color: #D9ECF4;
+    border: 1px solid #BBD3DA;  
+    padding-right: 1px;
+    -moz-border-radius: 7px; /* Firefox */
+    -webkit-border-radius: 7px; /* Safari, Chrome */
+    border-radius: 7px; /* CSS3 */
+    overflow: hidden!important;
+    -moz-box-shadow: 2px 2px 7px #000000;
+    -webkit-box-shadow: 2px 2px 7px #000000;
+    box-shadow: 2px 2px 7px #000000;
+    border-top-color: solid 1px black;
+
+}
+
+.iceDatTbl{
+    border: none!important;
+}
+
+.divider{
+    border:none !important;
+}
+
+.tablaPerfiles th{
+    background-color: #D6EAF3;
+    color: #004458 !important;
+    border-left: 1px solid #BBD3DA !important;
+    border-right: 0px transparent;
+    background: -moz-linear-gradient(center top , #EBEBEB 0%, #C6C6C6 100%) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EBEBEB', endColorstr='#C6C6C6');
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EBEBEB), to(#C6C6C6 ));
+    background: linear-gradient(#EBEBEB, #C6C6C6 );
+    /*background: -moz-linear-gradient(left center , #E3F2F6 0px, #D6EAF3 14px, #D6EAF3 100%) repeat scroll 0 0 transparent !important;*/
+}
+
+
+
+.divCampos{
+    height: 100%;
+}
+
+.header{
+    background: -moz-linear-gradient(center top , #EBEBEB 0%, #C6C6C6 100%) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EBEBEB', endColorstr='#C6C6C6');
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EBEBEB), to(#C6C6C6 ));
+    background: linear-gradient(#EBEBEB, #C6C6C6 );
+
+    color: #333333;
+    font-weight: normal;
+    text-shadow: 0 1px 1px #FFFFFF;
+    height: 30px;
+    padding-top: 10px;
+    padding-left: 30px;
+    -moz-border-radius: 7px; /* Firefox */
+    -webkit-border-radius: 7px; /* Safari, Chrome */
+    border-radius: 7px; /* CSS3 */
+}
+
+.icePnlPopHdr{
+    background: -moz-linear-gradient(center top , #EBEBEB 0%, #C6C6C6 100%) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EBEBEB', endColorstr='#C6C6C6');
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EBEBEB), to(#C6C6C6 ));
+    background: linear-gradient(#EBEBEB, #C6C6C6 );
+}
+
+.dividerFst, .dividerSnd{
+    overflow-x: hidden;
+}
+
+.panelMenu{
+    position: absolute; 
+    top:20px; 
+    left: 0px; 
+    right: 0px;
+    background-image: url("./images/body-dark.jpg");
+    background-repeat: repeat;
+    margin-bottom: -moz-box-shadow: 2px 2px 7px #000000;
+    -webkit-box-shadow: 2px 2px 7px #000000;
+    box-shadow: 2px 2px 7px #000000;
+    padding-left: 50px;
+}
+
+.iceMnuBarItem a {
+    height: 30px;
+    padding-top: 10px;
+    background: none!important;
+    color: #FFFFFF;
+    border: none;
+    font-weight: bold;
+    text-shadow: 0 1px 1px #000000;
+}
+
+.iceMnuBarItem a:hover {
+    height: 30px;
+    padding-top: 10px;
+    background: none!important;
+    color: #BBD3DA;
+    border: none;
+    font-weight: bold;
+    text-shadow: 0 1px 1px #000000;
+}
+
+
+.footerCapas{
+    background-color: #FDFDFE;
+    background: -moz-linear-gradient(center top , #EBEBEB 0%, #C6C6C6 100%) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EBEBEB', endColorstr='#C6C6C6');
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EBEBEB), to(#C6C6C6 ));
+    background: linear-gradient(#EBEBEB, #C6C6C6 );
+    /*background: -moz-linear-gradient(center top ,  #E8E8EB 0%,#FDFDFE 100%) repeat scroll 0 0 transparent;*/
+    box-shadow: 2px 2px 7px #000000;
+    position: absolute;
+    bottom: 0;
+    left:0;
+    width: 100% ; 
+    background-color: black; 
+    padding: 5px;
+}
+
+
+.icePnlPopHdr .iceOutTxt, .icePnlTlTipHdr .iceOutTxt {
+    color: #000000!important;
+    font-size: 1.0em;
+    font-weight: normal;
+}
+
+.divider div{
+    border-width: 0px!important;
+}
+
+
+
+.tablaCapas{
+    background-color: #D9ECF4;
+    color: #374073 !important;
+
+}
+
+/*tablaCapas tr td:hover{*/
+.tabla .myrow:hover {
+    background-color: #C1DBE6 !important;
+    color: #374073 !important;
+}
+
+
+.tablaCapas td{
+    border-left: none !important;
+    border-right:  none!important;
+    border-bottom: 1px solid #BBD3DA;
+    border-top: 1px solid #FFFFFF;
+    padding-right: 10px;
+}
+
+.tablaCapas a{
+    color: #004458;
+    padding-left: 10px;
+}
+
+.tablaPefiles{
+    border: 0px !important;
+    border-width: 0px !important;
+    -moz-box-shadow: 2px 2px 7px #000000;
+    -webkit-box-shadow: 2px 2px 7px #000000;
+    box-shadow: 2px 2px 7px #000000;
+}
+
+.tablaPerfiles thead{
+    display: none;
+}
+
+.tablaCapas thead{
+    background: -moz-linear-gradient(center top , #EBEBEB 0%, #C6C6C6 100%) repeat scroll 0 0 transparent;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EBEBEB', endColorstr='#C6C6C6');
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#EBEBEB), to(#C6C6C6 ));
+    background: linear-gradient(#EBEBEB, #C6C6C6 );
+    color: #333333;
+    font-weight: normal;
+    text-shadow: 0 1px 1px #FFFFFF;
+    height: 30px;
+    padding-top: 10px;
+    padding-left: 30px;
+    -moz-border-radius: 7px; /* Firefox */
+    -webkit-border-radius: 7px; /* Safari, Chrome */
+    border-radius: 7px; /* CSS3 */
+}
+
+.tablaCapas th:hover{
+    background-image: none;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+.tablaCapas th{
+    background-image: none;
+    text-shadow: 0 1px 1px #FFFFFF;
+    /* background-color: black;
+     color: #004458 !important;
+     border-left: 1px solid #686868!important;
+     border-right: 1px solid #848484!important;
+     border-top: black;
+     border-right: 0px transparent;
+     background-color: #848484;
+     background-image: none;*/
+    /*background: -moz-linear-gradient(left center , #686868 0px, #848484 155px,  #848484 100%) repeat scroll 0 0 transparent !important;*/
+}
+.tablaCapas th span{
+    color: #004458 !important;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+.tablaCapas th{
+    color: #004458 !important;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+.iceDatTblColHdr, .iceDatTblColHdr1, .iceDatTblColHdr2, .iceDatTblColGrpHdrCol, .iceDatTblFtr {
+    background: none;
+
+}
+
+.divTablaCapas .iceDatTbl{
+    margin-top: 0px;
+}
+
+.tablaConHeader .tablaHdr{     
+    background-color: #D9ECF4!important;
+    border-left: 1px solid #FFFFFF !important;
+    border-right: 1px solid #BBD3DA !important;
+    background-image: none !important;
+    color: #004458;
+    text-shadow: 0 1px 1px #FFFFFF;   
+}
+
+
+.wrapbutton{
+    background-image: url("../images/backbutton.png");
+    height: 32px;
+    background-repeat: repeat-x;
+    -moz-box-shadow: 1px 1px 1px #FFFFFF;
+    -webkit-box-shadow: 1px 1px 1px #FFFFFF;
+    box-shadow: 1px 1px 1px #FFFFFF;
+    border: 1px solid #999999;
+    -moz-border-radius: 4px; /* Firefox */
+    -webkit-border-radius: 4px; /* Safari, Chrome */
+    border-radius: 4px; /* CSS3 */
+    /*padding-right: 10px;*/
+}
+.wrapbutton a{
+    /*margin-top: 5px;*/
+    padding: 5px;
+    text-shadow: 0 1px 1px #FFFFFF;
+    float:right;
+    font-size: 14.4333px;
+}
+
+.wrapbutton span{
+    float:right;
+}
+
+.wrapbutton input{
+    float:right;    
+}
+
+
+#iceForm:divisorVerticalSecond{
+    overflow: hidden !important;
+}
+
+.divisionALaIzquierda{
+    border-left: 1px solid #BBD3DA !important;
+    -moz-box-shadow: -1px 0px 1px #FFFFFF;
+    -webkit-box-shadow: -1px 0px 1px #FFFFFF;
+    box-shadow: -1px 0px 1px #FFFFFF;
+}
+
+.icePnlPop{
+    -moz-box-shadow: 0px 0px 25px #000000;
+    -webkit-box-shadow: 0px 0px 25px #000000;
+    box-shadow: 0px 0px 25px #000000;
+}
+
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+    background: none !important; 
+}
+
+.ice-linkbutton, .ice-linkbutton span, .ice-linkbutton a{
+    margin:0px !important;
+    padding: 0px !important;
+    font-weight: normal !important;
+    font-size: 13.7167px !important;
+
+}
+
+
+a{
+    text-decoration: none;
+}
+
+.errorDiv{
+    margin-top: 100px;
+    background-image: url('../images/error.png');
+    background-repeat: no-repeat;
+    background-size: 220px 220px;
+    padding-left: 220px;
+    padding-top: 50px;
+
+    height: 300px;
+    width: 500px;
+}
+
+.errorDiv h1{
+    color: #E47B03;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+.errorDiv h2{
+    color: #333333;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+
+.iceMsgsError{
+    background-color: #FFDEDE;
+    background-image: url("../images/error_message.png");
+    background-position: 6px 5px;
+    background-repeat: no-repeat;
+    border: 1px solid #FF1919;
+    padding: 5px 10px 5px 30px;
+}
+
+.iceForm:errores{
+    padding: none;
+}
+
+li {
+    list-style: none outside none;
+}
+
+ul{
+    padding: 0px;
+}
+.labelTitulo { 
+    background-image: url("../images/Anubis.png");
+    background-repeat: no-repeat;
+    background-position: 1px -3px;
+    padding-left: 40px;
+    float: left;
+    display: inline;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 22px;    
+    vertical-align: middle;
+    color: #FFFFFF;
+    font-weight: bold;
+    text-shadow: 0 1px 1px #000000;
+    bottom: 30px;  
+    margin-top: 5px;
+    margin-right: 25px;
+}
+

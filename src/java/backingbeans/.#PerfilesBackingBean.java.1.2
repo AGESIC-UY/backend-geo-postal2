@@ -1,0 +1,260 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package backingbeans;
+
+import com.icesoft.faces.component.ext.HtmlDataTable;
+import com.icesoft.faces.component.ext.RowSelectorEvent;
+import dao.HibernateDao;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import model.Capas;
+import model.Perfiles;
+
+/**
+ *
+ * @author Camila.Riveron
+ */
+@ManagedBean(name = "perfiles")
+@ViewScoped
+public class PerfilesBackingBean implements Serializable {
+
+    private List<Perfiles> perfiles;
+    private Perfiles perfilSeleccionado;
+    private List<Capas> capasDisponibles;
+    
+    //Filtro tabla perfiles
+    public String perfiles_selectedEffectType = "default";
+    public String perfiles_selectedSearchMode = "contains";
+    private String busquedaPerfiles="";
+    private HtmlDataTable perfilesTable = null;
+    private String[] perfiles_selectedColumns = new String[]{"nombre"};
+    private int perfiles_lastFoundIndex = -1;
+    private boolean perfiles_caseSensitive;
+    
+    //Agregar nuevo perfil
+    private String nombrePerfil;
+    
+    //private boolean ascending = true;
+    //sortColumn="nombre" sortAscending="#{index.ascending}"
+    
+    //Editar y eliminar Perfil
+    private Perfiles toModify;
+    private int toRemove;
+    private int toEdit;
+    private boolean mostrarEditarPerfil;
+    private List<Capas> capasPerfil;
+    
+    public PerfilesBackingBean() {
+        try {
+            perfiles = HibernateDao.findAll("Perfiles"); 
+            toModify = new Perfiles();
+            mostrarEditarPerfil = false;
+        } catch (Exception ex) {
+            Logger.getLogger(PerfilesBackingBean.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+    }
+
+    public List<Capas> getCapasDisponibles() {
+        return capasDisponibles;
+    }   
+    
+
+    public Perfiles getPerfilSeleccionado() {
+        return perfilSeleccionado;
+    }
+
+    public List<Capas> getCapasPerfil() {
+        return capasPerfil;
+    }
+
+    public void setCapasPerfil(List<Capas> capasPerfil) {
+        this.capasPerfil = capasPerfil;
+    }
+    
+    
+    public void setNombrePerfil(String nombrePerfil) {
+        this.nombrePerfil = nombrePerfil;
+    }
+
+    public String getNombrePerfil() {
+        return nombrePerfil;
+    }
+
+    public List<Perfiles> getPerfiles() {
+        return perfiles;
+    }
+     
+
+    public String getBusquedaPerfiles() {
+        return busquedaPerfiles;
+    }
+
+    public void setBusquedaPerfiles(String busquedaPerfiles) {
+        this.busquedaPerfiles = busquedaPerfiles;
+    }    
+
+    public HtmlDataTable getPerfilesTable() {
+        return perfilesTable;
+    }
+
+    public String[] getPerfiles_selectedColumns() {
+        return perfiles_selectedColumns;
+    }
+    
+    public boolean getMostrarPaginadoPerfiles() {
+        if(perfiles != null) {
+            return perfiles.size() > 10;
+        }
+        return false;
+    }
+
+    public int getPerfiles_lastFoundIndex() {
+        return perfiles_lastFoundIndex;
+    }
+
+    public void setPerfilesTable(HtmlDataTable perfilesTable) {
+        this.perfilesTable = perfilesTable;
+    }
+
+    public void setPerfiles_selectedColumns(String[] perfiles_selectedColumns) {
+        this.perfiles_selectedColumns = perfiles_selectedColumns;
+    }  
+
+    public Perfiles getToModify() {
+        return toModify;
+    }
+
+    public void setToModify(Perfiles toModify) {
+        this.toModify = toModify;
+    }
+
+    public int getToRemove() {
+        return toRemove;
+    }
+
+    public void setToRemove(int toRemove) {
+        this.toRemove = toRemove;
+    }
+
+    public int getToEdit() {
+        return toEdit;
+    }
+
+    public void setToEdit(int toEdit) {
+        this.toEdit = toEdit;
+    }  
+
+    public boolean isMostrarEditarPerfil() {
+        return mostrarEditarPerfil;
+    }   
+    
+    
+    public void agregarPerfil() {
+        try {
+            if(!nombrePerfil.equals("")){
+                Perfiles perfil = new Perfiles();
+                perfil.setNombre(nombrePerfil);
+                
+                nombrePerfil = "";
+                HibernateDao.saveOrUpdate(perfil);
+                perfiles = HibernateDao.findAll("Perfiles"); 
+                toModify = new Perfiles();
+                mostrarEditarPerfil = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void modificarPerfil() {
+        try {
+            if(toModify != null && !"".equals(toModify.getNombre()))
+            {
+                HibernateDao.saveOrUpdate(toModify);
+                mostrarEditarPerfil = false;
+            }            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void findPerfil(javax.faces.event.ActionEvent e) {
+        HtmlDataTable.SearchType type = null;       
+        type = HtmlDataTable.SearchType.CONTAINS;      
+
+        int newFoundIndex = perfilesTable.findRow(busquedaPerfiles, perfiles_selectedColumns, perfiles_lastFoundIndex + 1, type, perfiles_caseSensitive);
+
+//        if (newFoundIndex < 0) {
+//            FacesContext context = FacesContext.getCurrentInstance();
+//            context.addMessage(perfilesTable.getClientId(context),
+//                    new FacesMessage("Search starting at index " + (lastFoundIndex + 1) + " for \"" + searchQuery + "\" did not return a result."));
+//            return;
+//        }
+
+        perfiles_lastFoundIndex = newFoundIndex;
+        perfilesTable.navigateToRow(perfiles_lastFoundIndex); 
+        perfilSeleccionado = (Perfiles)perfilesTable.getRowData();        
+    }
+
+    public void resetPerfiles(javax.faces.event.ActionEvent e) {
+        perfiles_lastFoundIndex = -1;
+    }   
+   
+    
+    public void actualizarCapas()
+    {    
+        if(perfilSeleccionado != null)
+        {
+            List<Capas> capasAll = HibernateDao.findAll("Capas");             
+            for (Capas c : perfilSeleccionado.getCapasList()) {
+                capasAll.remove(c);
+            }
+            capasDisponibles = capasAll;
+        }
+        capasPerfil = perfilSeleccionado.getCapasList();
+    }
+    
+    public void selectionListener(RowSelectorEvent event) {
+
+      perfilSeleccionado = perfiles.get(event.getRow());
+      actualizarCapas();      
+    }     
+
+    
+    public String editItem() {
+        toModify = getPerfilById(toEdit);
+        mostrarEditarPerfil = true;
+        return null;
+    }
+    
+    private Perfiles getPerfilById(int id) {
+        for (Perfiles currentItem : perfiles) {
+            if (id == currentItem.getId()) {
+                return currentItem;
+            }
+        }
+        return null;
+    }
+    
+    public void yes() {
+        Perfiles removePerfil = getPerfilById(toRemove);
+
+        if (removePerfil != null) {
+            HibernateDao.delete(removePerfil);
+            perfiles.remove(removePerfil);  
+            capasDisponibles= new ArrayList();
+            capasPerfil = new ArrayList();
+        }        
+    }
+}
