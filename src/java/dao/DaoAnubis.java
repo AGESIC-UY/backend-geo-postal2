@@ -631,4 +631,85 @@ public class DaoAnubis {
         return geom;
 
     }
+
+    public static ResultadoBusquedaPunto buscarPuntoXIdTsubasa(int idPunto) {
+        ResourceBundle b = ResourceBundle.getBundle("conf.conf");
+        String conexionURL = b.getString("urlTsubasa");
+        String user = b.getString("userTsubasa");
+        String pass = b.getString("passTsubasa");
+        Connection con = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            con = DriverManager.getConnection(conexionURL, user, pass);
+
+            String consulta = "select idcalle,nombre,numero,cp,solar_id,solar, manzana,nombre_inmueble,st_x(st_transform(geom,4326)) as x,st_y(st_transform(geom,4326)) as y from clasificacion_puntos p "
+                    + "where id=?";
+       
+            PreparedStatement ps = con.prepareStatement(consulta);
+            ps.setInt(1, idPunto);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                return null;
+            }
+
+            PGpoint geom = new PGpoint(rs.getDouble("x"), rs.getDouble("y"));
+
+            //PGpoint geom = (PGpoint) rs.getObject(3);
+
+
+            HashMap<String, String> propiedades = new HashMap<String, String>();
+
+            String calle = rs.getString(2);
+            if (calle == null) {
+                calle = "";
+            }
+            String nro = rs.getString(3);
+            if (nro == null) {
+                nro = "";
+            }
+            String cp = rs.getString(4);
+            if (cp == null) {
+                cp = "";
+            }
+            String solar = rs.getString(6);
+            if (solar == null) {
+                solar = "";
+            }
+            String manzana = rs.getString(7);
+            if (manzana == null) {
+                manzana = "";
+            }
+            String inmueble = rs.getString(8);
+            if (inmueble == null) {
+                inmueble = "";
+            }
+
+            propiedades.put("Calle", calle.trim());
+            propiedades.put("Numero", nro.trim());
+            propiedades.put("CP", cp.trim());
+            propiedades.put("Solar", solar.trim());
+            propiedades.put("Manzana", manzana.trim());
+            propiedades.put("Nombre_inmueble", inmueble.trim());
+
+            con.close();
+
+            return new ResultadoBusquedaPunto(1212, null, geom, "Punto: " + idPunto, propiedades);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DaoAnubis.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+
+
+
+    }
 }
