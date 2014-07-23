@@ -101,20 +101,19 @@ public class ServiciosBean {
                                     cc.setCriterio(criterio);
                                     cc.setValor(campos[i].trim());
                                     listaconsulta.add(cc);
-                                }
-                                else{
+                                } else {
                                     ConsultaFiltro consFiltro = new ConsultaFiltro();
                                     consFiltro.setNombreCapa(campoCapa.getCapa());
-                                    
+
                                     ConsultaCampo cf = new ConsultaCampo();
                                     cf.setNombreCampo(nomCampo);
                                     cf.setCriterio(criterio);
                                     cf.setValor(campos[i].trim());
                                     ArrayList<ConsultaCampo> filtrosCampos = new ArrayList<>();
                                     filtrosCampos.add(cf);
-                                    
+
                                     consFiltro.setConsultaCampos(filtrosCampos);
-                                    
+
                                     listaFiltros.add(consFiltro);
                                 }
                             }
@@ -392,7 +391,23 @@ public class ServiciosBean {
 
     }
     
-        public String getbusquedaIdPuntoTsubasa() throws Exception {
+    
+    public String getguardarObsPuntoTsubasa() throws Exception{
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        String obs = URLDecoder.decode((String) request.getParameter("observaciones"), "UTF-8");
+        String idPuntoString = request.getParameter("idpunto");
+        Integer idPunto = null;
+        try {
+            idPunto = new Integer(idPuntoString);
+        } catch (Exception e) {
+            return "noNumerico";
+        }
+        return DaoAnubis.guardarObsPuntoTsubasa(idPunto, obs);
+        
+    }
+
+    public String getbusquedaIdPuntoTsubasa() throws Exception {
         ArrayList<ResultadoBusqueda> salida = new ArrayList<>();
         GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
         Gson gson = gsonBuilder.create();
@@ -400,14 +415,14 @@ public class ServiciosBean {
             FacesContext context = FacesContext.getCurrentInstance();
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             String jsonSalida = "";
-           
-            int idPunto = Integer.parseInt(request.getParameter("puntoId"));         
+
+            int idPunto = Integer.parseInt(request.getParameter("puntoId"));
             ResultadoBusquedaPunto rs = null;
-            if (idPunto > 0) {           
+            if (idPunto > 0) {
                 rs = DaoAnubis.buscarPuntoXIdTsubasa(idPunto);
             }
-          //  DaoAnubis.transformar(rs, 31981, 4326);
-         //   rs.setCp(DaoAnubis.getCP(rs.getPunto()));
+            //  DaoAnubis.transformar(rs, 31981, 4326);
+            //   rs.setCp(DaoAnubis.getCP(rs.getPunto()));
             jsonSalida += gson.toJson(rs);
             System.out.println(jsonSalida);
             return jsonSalida;
