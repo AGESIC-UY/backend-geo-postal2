@@ -391,6 +391,33 @@ public class ServiciosBean {
         }
 
     }
+    
+        public String getbusquedaIdPuntoTsubasa() throws Exception {
+        ArrayList<ResultadoBusqueda> salida = new ArrayList<>();
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
+        Gson gson = gsonBuilder.create();
+        try {
+            FacesContext context = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            String jsonSalida = "";
+           
+            int idPunto = Integer.parseInt(request.getParameter("puntoId"));         
+            ResultadoBusquedaPunto rs = null;
+            if (idPunto > 0) {           
+                rs = DaoAnubis.buscarPuntoXIdTsubasa(idPunto);
+            }
+          //  DaoAnubis.transformar(rs, 31981, 4326);
+         //   rs.setCp(DaoAnubis.getCP(rs.getPunto()));
+            jsonSalida += gson.toJson(rs);
+            System.out.println(jsonSalida);
+            return jsonSalida;
+        } catch (Exception ex) {
+            Logger.getLogger(ServiciosBean.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+
+    }
 
     public String getguardarObsNumeroCuentaUTE() throws Exception {
         FacesContext context = FacesContext.getCurrentInstance();
