@@ -23,12 +23,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -506,6 +508,34 @@ public class DaoAnubis {
         return null;
     }
 
+    public static String guardarObsPuntoTsubasa(Integer idPunto, String observacion) {
+        ResourceBundle b = ResourceBundle.getBundle("conf.conf");
+        String conexionURL = b.getString("urlTsubasa");
+        String user = b.getString("userTsubasa");
+        String pass = b.getString("passTsubasa");
+        Connection con = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            con = DriverManager.getConnection(conexionURL, user, pass);
+
+            String consulta = " "
+                    + " INSERT INTO eventos_puntos( fecha, usuario, punto_id, descripcion, valoracion, valido, sistema_id)"
+                    + "VALUES (?, ?, ?, ?, null, ?, ?);";
+            PreparedStatement ps = con.prepareStatement(consulta);
+            ps.setDate(1, new Date((new GregorianCalendar()).getTimeInMillis()));
+            ps.setString(2, "Visualizador");
+            ps.setInt(3, idPunto);
+            ps.setString(4, observacion);
+            ps.setBoolean(5, true);
+            ps.setInt(6, 2); // Sistema Visualizador
+            ps.executeUpdate();
+            con.close();
+        } catch (Exception e) {
+            return "ErrorInterno";
+        }
+        return "ok";
+    }
+
     public static String guardarObsNumeroCuentaUTE(String NumeroCuentaUTE, int NIS, String obs, boolean esNIS) {
         ResourceBundle b = ResourceBundle.getBundle("conf.conf");
 
@@ -644,7 +674,7 @@ public class DaoAnubis {
 
             String consulta = "select idcalle,nombre,numero,cp,solar_id,solar, manzana,nombre_inmueble,st_x(st_transform(geom,4326)) as x,st_y(st_transform(geom,4326)) as y from clasificacion_puntos p "
                     + "where id=?";
-       
+
             PreparedStatement ps = con.prepareStatement(consulta);
             ps.setInt(1, idPunto);
             ResultSet rs = ps.executeQuery();
