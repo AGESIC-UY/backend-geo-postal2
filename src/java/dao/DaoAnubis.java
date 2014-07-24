@@ -519,7 +519,7 @@ public class DaoAnubis {
             con = DriverManager.getConnection(conexionURL, user, pass);
 
             String consulta = " "
-                    + " INSERT INTO eventos_puntos( fecha, usuario, punto_id, descripcion, valoracion, valido, sistema_id)"
+                    + " INSERT INTO eventos_puntos(  usuario, punto_id, descripcion, valoracion, valido, sistema_id)"
                     + "VALUES ( ?, ?, ?, null, ?, ?);";
             PreparedStatement ps = con.prepareStatement(consulta);
             ps.setString(1, "Visualizador");
