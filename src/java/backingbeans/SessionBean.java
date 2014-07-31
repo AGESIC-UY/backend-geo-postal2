@@ -23,7 +23,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
  */
 @ManagedBean(name = "SessionBean")
 @SessionScoped
-public class SessionBean {
+public class SessionBean { 
 
     private Session session;
     private Usuarios user = null;
