@@ -519,15 +519,14 @@ public class DaoAnubis {
             con = DriverManager.getConnection(conexionURL, user, pass);
 
             String consulta = " "
-                    + " INSERT INTO eventos_puntos( fecha, usuario, punto_id, descripcion, valoracion, valido, sistema_id)"
-                    + "VALUES (?, ?, ?, ?, null, ?, ?);";
+                    + " INSERT INTO eventos_puntos(  usuario, punto_id, descripcion, valoracion, valido, sistema_id)"
+                    + "VALUES ( ?, ?, ?, null, ?, ?);";
             PreparedStatement ps = con.prepareStatement(consulta);
-            ps.setDate(1, new Date((new GregorianCalendar()).getTimeInMillis()));
-            ps.setString(2, "Visualizador");
-            ps.setInt(3, idPunto);
-            ps.setString(4, observacion);
-            ps.setBoolean(5, true);
-            ps.setInt(6, 2); // Sistema Visualizador
+            ps.setString(1, "Visualizador");
+            ps.setInt(2, idPunto);
+            ps.setString(3, observacion);
+            ps.setBoolean(4, true);
+            ps.setInt(5, 2); // Sistema Visualizador
             ps.executeUpdate();
             con.close();
         } catch (Exception e) {
