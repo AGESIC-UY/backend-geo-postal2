@@ -679,6 +679,6 @@ public class ServiciosBean {
             baseC.setCapas(base.getBaseId().getTablas());
             basesConv.add(baseC);
         }
-        return basesConv;
+        return basesConv;       
     }
 }
