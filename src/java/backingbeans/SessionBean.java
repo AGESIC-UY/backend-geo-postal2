@@ -40,7 +40,7 @@ public class SessionBean {
     }
 
     public Usuarios getUser() {
-        return user;
+        return user; 
     }
 
     public void setUser(Usuarios user) {
