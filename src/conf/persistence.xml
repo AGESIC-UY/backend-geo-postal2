@@ -3,6 +3,7 @@
   <persistence-unit name="AnubisPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>model.Plugins</class>
+    <class>model.ContactoVisualizador</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/geodb2"/>

@@ -27,6 +27,7 @@ import model.Bases;
 import model.Campos;
 import model.CapaFiltro;
 import model.Capas;
+import model.ContactoVisualizador;
 import model.PerfilBase;
 import model.PerfilCampos;
 import model.PerfilPlugins;
@@ -952,5 +953,33 @@ public class HibernateDao {
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         request.getParameter("");
         return (T) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
+
+    /*OBTENER COMENTARIOS GEOPOSTAL*/
+    public static  List<HashMap> obtenerComentariosGeopostal() {
+        
+        Session s = HibernateDao.getSession();    
+        ArrayList<HashMap> list = new ArrayList<HashMap>();  
+       
+        try {
+            s.getTransaction().begin();
+            //filtro la cantidad?????
+            Query query = s.createQuery("SELECT p from ContactoVisualizador p where verificado=true ORDER BY fecha desc");
+            List<ContactoVisualizador> result = (List<ContactoVisualizador>) query.list();
+            for (ContactoVisualizador c : result) {
+                 HashMap resultado = new HashMap();               
+                resultado.put("Nombre", c.getNombre());
+                resultado.put("Mensaje", c.getMensaje());
+                resultado.put("Fecha", c.getFecha().toString());
+                resultado.put("Respuesta", c.getRespuesta());
+               list.add(resultado);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            s.close();
+            return null;
+        }
+        return list;
+
     }
 }
