@@ -349,12 +349,12 @@ public class ServiciosBean {
         String html = "<html><h3 style='color:#384F8F; font-size: medium;'>Mensaje enviado a través Isis Visualizador</h3><h3 style='color:#384F8F; font-size: medium;'>Remitente</h3><p style='color:#4E4F5C;'>" + nombre + " (" + emailDest + ")</p><h3 style='color:#384F8F; font-size: medium'>Mensaje</h3><p style='color:#4E4F5C;'>" + mensaje + "</p><h3 style='color:#384F8F; font-size: medium'>Link a la vista en el mapa:</h3> <br/> <p style='color:#4E4F5C;'>" + link + "</p></html>";
 
         try {
-            /*  SendEmail e = new SendEmail();
+             SendEmail e = new SendEmail();
              List<String> tos = new LinkedList<>();
              tos.add("geomatica@correo.com.uy");
-             DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");*/
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Date d = new Date();
-            /*    e.sendMail("[Isis Visualizador] " + df.format(d) + "", html, tos, null, null, null, false);*/
+            e.sendMail("[Isis Visualizador] " + df.format(d) + "", html, tos, null, null, null, false);
             //guardar datos contacto_visualizador
             ContactoVisualizador c = new ContactoVisualizador(nombre, emailDest, mensaje, link, d, Boolean.FALSE);
             HibernateDao.saveOrUpdate(c);
