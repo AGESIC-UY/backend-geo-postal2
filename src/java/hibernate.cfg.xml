@@ -14,6 +14,7 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">postgres</property>     -->
 
+        <!--<property name="hibernate.connection.url">jdbc:postgresql://postgg-prod:5432/postgres</property>-->
         <property name="hibernate.connection.url">jdbc:postgresql://10.1.1.108:5432/postgres</property>
         <property name="hibernate.connection.username">geomatica</property>
         <property name="hibernate.connection.password">controlce</property>

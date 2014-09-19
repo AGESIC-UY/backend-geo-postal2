@@ -600,6 +600,7 @@ public class HibernateDao {
             for (String a : campos2) {
                 query.addScalar(a, StringType.INSTANCE);
             }
+            System.out.println(consulta);
             List result = query.list();
             s.getTransaction().commit();
             s.close();
