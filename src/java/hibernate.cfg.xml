@@ -10,18 +10,17 @@
         <!--<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>-->
         <property name="hibernate.connection.driver_class">net.bull.javamelody.JdbcDriver</property>
         <property name="hibernate.connection.driver">org.postgresql.Driver</property>
-<!--        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/geodb2</property>
+        <!--        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/geodb2</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">postgres</property>     -->
 
-        <!--<property name="hibernate.connection.url">jdbc:postgresql://postgg-prod:5432/postgres</property>-->
-        <property name="hibernate.connection.url">jdbc:postgresql://10.1.1.108:5432/postgres</property>
+        <!--        <property name="hibernate.connection.url">jdbc:postgresql://10.1.1.108:5432/postgres</property>
         <property name="hibernate.connection.username">geomatica</property>
-        <property name="hibernate.connection.password">controlce</property>
+        <property name="hibernate.connection.password">controlce</property>-->
 
-<!--<property name="hibernate.connection.url">jdbc:postgresql://10.1.3.112:5432/geodb2</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://10.1.3.112:5432/geodb2</property>
         <property name="hibernate.connection.username">postgres</property>
-        <property name="hibernate.connection.password">postgres</property>-->
+        <property name="hibernate.connection.password">postgres</property>
         <!--<property name="connection.pool_size">20</property>-->
         <!--        <property name="hibernate.connection.pool_size" >5</property>
         <property name="jorge" >5</property>-->
@@ -51,6 +50,7 @@
         <mapping class="model.PerfilBase"/> 
         <mapping class="model.Usuarios"/> 
         <mapping class="model.CapaFiltro"/> 
+        <mapping class="model.ContactoVisualizador"/> 
         
     </session-factory>
 </hibernate-configuration>
