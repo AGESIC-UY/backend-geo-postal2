@@ -1,0 +1,115 @@
+<<<<<<< HEAD
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!--org.hibernate.dialect.PostgreSQLDialect-->
+        <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property>
+        <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+        
+        <!--Se cambio el driver class para que se monitoricen las conexiones-->
+        <!--<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>-->
+        <property name="hibernate.connection.driver_class">net.bull.javamelody.JdbcDriver</property>
+        <property name="hibernate.connection.driver">org.postgresql.Driver</property>
+        <!--        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/geodb2</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">postgres</property>     -->
+
+        <property name="hibernate.connection.url">jdbc:postgresql://10.1.1.108:5432/postgres</property>
+        <property name="hibernate.connection.username">geomatica</property>
+        <property name="hibernate.connection.password">controlce</property>
+
+<!--        <property name="hibernate.connection.url">jdbc:postgresql://postgg-prod:5432/geodb2</property>
+        <property name="hibernate.connection.username">geomatica</property>
+        <property name="hibernate.connection.password">controlce</property>-->
+        <!--<property name="connection.pool_size">20</property>-->
+        <!--        <property name="hibernate.connection.pool_size" >5</property>
+        <property name="jorge" >5</property>-->
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">50</property>
+        <!--<property name="hibernate.c3p0.timeout">180000</property>-->
+        <property name="hibernate.c3p0.max_statements">50</property>
+        <!--<property name="hibernate.connection.pool_size">20</property>-->
+        <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.show_sql">false</property>
+        
+        
+        <!--<property name="hibernate.hbm2ddl.auto">create</property>-->
+    
+        <mapping class="model.Perfiles"/>
+        <mapping class="model.Capas"/>
+        <mapping class="model.PerfilCampos"/>
+        <mapping class="model.Campos"/>
+        <mapping class="model.PerfilesCapas"/>
+        <mapping class="model.GeometryColumns"/>
+        <mapping class="model.Plugins"/>
+        <mapping class="model.PerfilPlugins"/>
+        <mapping class="model.CodPostalesV0Pg"/>        
+        <mapping class="com.vividsolutions.jts.geom.MultiPolygon"/>
+        <mapping class="model.BaseCapa"/>
+        <mapping class="model.Bases"/>
+        <mapping class="model.PerfilBase"/> 
+        <mapping class="model.Usuarios"/> 
+        <mapping class="model.CapaFiltro"/> 
+        <mapping class="model.ContactoVisualizador"/> 
+        
+    </session-factory>
+</hibernate-configuration>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!--org.hibernate.dialect.PostgreSQLDialect-->
+        <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property>
+        <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+        
+        <!--Se cambio el driver class para que se monitoricen las conexiones-->
+        <!--<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>-->
+        <property name="hibernate.connection.driver_class">net.bull.javamelody.JdbcDriver</property>
+        <property name="hibernate.connection.driver">org.postgresql.Driver</property>
+<!--                <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/postgres</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">postgres</property>     -->
+
+        <!--        <property name="hibernate.connection.url">jdbc:postgresql://10.1.1.108:5432/postgres</property>
+        <property name="hibernate.connection.username">geomatica</property>
+        <property name="hibernate.connection.password">controlce</property>-->
+
+        <property name="hibernate.connection.url">jdbc:postgresql://postgg-prod:5432/postgres</property>
+        <property name="hibernate.connection.username">geomatica</property>
+        <property name="hibernate.connection.password">controlce</property>
+        <!--<property name="connection.pool_size">20</property>-->
+        <!--        <property name="hibernate.connection.pool_size" >5</property>
+        <property name="jorge" >5</property>-->
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">50</property>
+        <!--<property name="hibernate.c3p0.timeout">180000</property>-->
+        <property name="hibernate.c3p0.max_statements">50</property>
+        <!--<property name="hibernate.connection.pool_size">20</property>-->
+        <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.show_sql">false</property>
+        
+        
+        <!--<property name="hibernate.hbm2ddl.auto">create</property>-->
+    
+        <mapping class="model.Perfiles"/>
+        <mapping class="model.Capas"/>
+        <mapping class="model.PerfilCampos"/>
+        <mapping class="model.Campos"/>
+        <mapping class="model.PerfilesCapas"/>
+        <mapping class="model.GeometryColumns"/>
+        <mapping class="model.Plugins"/>
+        <mapping class="model.PerfilPlugins"/>
+        <mapping class="model.CodPostalesV0Pg"/>        
+        <mapping class="com.vividsolutions.jts.geom.MultiPolygon"/>
+        <mapping class="model.BaseCapa"/>
+        <mapping class="model.Bases"/>
+        <mapping class="model.PerfilBase"/> 
+        <mapping class="model.Usuarios"/> 
+        <mapping class="model.CapaFiltro"/> 
+        <mapping class="model.ContactoVisualizador"/> 
+        
+    </session-factory>
+</hibernate-configuration>
+>>>>>>> c31b81c5fc2a03c176c734b8999ed009b98e12d6

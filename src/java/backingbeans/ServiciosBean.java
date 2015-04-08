@@ -346,7 +346,7 @@ public class ServiciosBean {
         String mensaje = (String) request.getParameter("mensajeEmail");
         String link = (String) request.getParameter("linkVista");
 
-        String html = "<html><h3 style='color:#384F8F; font-size: medium;'>Mensaje enviado a través Isis Visualizador</h3><h3 style='color:#384F8F; font-size: medium;'>Remitente</h3><p style='color:#4E4F5C;'>" + nombre + " (" + emailDest + ")</p><h3 style='color:#384F8F; font-size: medium'>Mensaje</h3><p style='color:#4E4F5C;'>" + mensaje + "</p><h3 style='color:#384F8F; font-size: medium'>Link a la vista en el mapa:</h3> <br/> <p style='color:#4E4F5C;'>" + link + "</p></html>";
+        String html = "<html><h3 style='color:#384F8F; font-size: medium;'>Mensaje enviado a través de Geopostal</h3><h3 style='color:#384F8F; font-size: medium;'>Remitente</h3><p style='color:#4E4F5C;'>" + nombre + " (" + emailDest + ")</p><h3 style='color:#384F8F; font-size: medium'>Mensaje</h3><p style='color:#4E4F5C;'>" + mensaje + "</p><h3 style='color:#384F8F; font-size: medium'>Link a la vista en el mapa:</h3> <br/> <p style='color:#4E4F5C;'>" + link + "</p></html>";
 
         try {
              SendEmail e = new SendEmail();
@@ -354,7 +354,7 @@ public class ServiciosBean {
              tos.add("geomatica@correo.com.uy");
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Date d = new Date();
-            e.sendMail("[Isis Visualizador] " + df.format(d) + "", html, tos, null, null, null, false);
+            e.sendMail("[Geopostal] " + df.format(d) + "", html, tos, null, null, null, false);
             //guardar datos contacto_visualizador
             ContactoVisualizador c = new ContactoVisualizador(nombre, emailDest, mensaje, link, d, Boolean.FALSE);
             HibernateDao.saveOrUpdate(c);
@@ -371,8 +371,7 @@ public class ServiciosBean {
         List<HashMap> lista = HibernateDao.obtenerComentariosGeopostal();
         Gson gson;
         gson = new Gson();
-        String jsonRes = gson.toJson(lista);
-        System.out.println(jsonRes);
+        String jsonRes = gson.toJson(lista);     
         return jsonRes;
 
     }

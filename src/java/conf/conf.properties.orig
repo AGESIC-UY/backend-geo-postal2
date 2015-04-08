@@ -12,14 +12,21 @@ criterio.busqueda.default = Ninguno
 #passNumeroCuentaUTE=2607150607872377183765
 userNumeroCuentaUTE=geomatica
 passNumeroCuentaUTE=controlce
+<<<<<<< HEAD
 #urlute=jdbc:postgresql://postgg-prod:5432/ute
+=======
+>>>>>>> c31b81c5fc2a03c176c734b8999ed009b98e12d6
 urlute=jdbc:postgresql://postgg-prod:5432/ute
 
 
 userTsubasa=geomatica
 passTsubasa=controlce
+<<<<<<< HEAD
+#urlTsubasa=jdbc:postgresql://postgg-prod:5432/tsubasa
 urlTsubasa=jdbc:postgresql://postgg-prod:5432/tsubasa
-#urlTsubasa=jdbc:postgresql://10.1.1.108:5432/tsubasa
+=======
+urlTsubasa=jdbc:postgresql://10.1.1.86:5432/tsubasa
+>>>>>>> c31b81c5fc2a03c176c734b8999ed009b98e12d6
 
 
 oms="Open Street Map"
