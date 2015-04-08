@@ -567,9 +567,9 @@ public class ServiciosBean {
 
         PGpoint p = DaoAnubis.getCoordenadasTransformadas(coordX, coordY, srid);
         if (p != null) {
-            res += "{error: false, punto_x: " + p.x + ", punto_y: " + p.y + "}";
+            res += "{\"error\": false, \"punto_x\": " + p.x + ", \"punto_y\": " + p.y + "}";
         } else {
-            res += "{error: true, mensaje: 'Ocurrió un error al procesar el punto. Verifique que el Sistema de Referencia sea correcto.'}";
+            res += "{\"error\": true, \"mensaje\": 'Ocurrió un error al procesar el punto. Verifique que el Sistema de Referencia sea correcto.'}";
         }
         return res;
     }
