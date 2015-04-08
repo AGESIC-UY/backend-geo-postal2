@@ -974,6 +974,7 @@ public class HibernateDao {
                 resultado.put("Respuesta", c.getRespuesta());
                list.add(resultado);
             }
+              s.close();
         } catch (Exception e) {
             e.printStackTrace();
             s.close();
