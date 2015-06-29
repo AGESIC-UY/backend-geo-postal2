@@ -43,6 +43,16 @@
         <servlet-class>com.icesoft.faces.webapp.CompatResourceServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>ServletAdaptor</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <description>Multiple packages, separated by semicolon(;), can be specified in param-value</description>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>servicios</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -67,6 +77,10 @@
         <servlet-name>Resource Servlet</servlet-name>
         <url-pattern>/xmlhttp/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServletAdaptor</servlet-name>
+        <url-pattern>/ws/*</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
@@ -75,44 +89,41 @@
     <welcome-file-list>
         <welcome-file>faces/index.xhtml</welcome-file>
     </welcome-file-list>
-    
     <error-page>
-        <exception-type>login.UserException</exception-type>        
+        <exception-type>login.UserException</exception-type>
         <location>/faces/login.xhtml</location>
-    </error-page>    
-
+    </error-page>
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
         <location>/faces/error.xhtml</location>
-    </error-page>    
-    
-    <filter> 
-        <filter-name>CharacterFilter</filter-name> 
-        <filter-class>CharacterFilter</filter-class>       	
-    </filter> 
-    <filter-mapping> 
-        <filter-name>CharacterFilter</filter-name> 
-        <url-pattern>*</url-pattern> 
-    </filter-mapping>   
-    <filter> 
-        <filter-name>Filtro</filter-name> 
-        <filter-class>login.Filtro</filter-class>       	
-    </filter> 
-    <filter-mapping> 
-        <filter-name>Filtro</filter-name> 
-        <url-pattern>/capas.jsf</url-pattern> 
-    </filter-mapping>   
-    <filter-mapping> 
-        <filter-name>Filtro</filter-name> 
-        <url-pattern>/perfiles.jsf</url-pattern> 
-    </filter-mapping> 
-    <filter-mapping> 
-        <filter-name>Filtro</filter-name> 
-        <url-pattern>/bases.jsf</url-pattern> 
-    </filter-mapping> 
-    <filter-mapping> 
-        <filter-name>Filtro</filter-name> 
-        <url-pattern>/</url-pattern> 
+    </error-page>
+    <filter>
+        <filter-name>CharacterFilter</filter-name>
+        <filter-class>CharacterFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>Filtro</filter-name>
+        <filter-class>login.Filtro</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Filtro</filter-name>
+        <url-pattern>/capas.jsf</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Filtro</filter-name>
+        <url-pattern>/perfiles.jsf</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Filtro</filter-name>
+        <url-pattern>/bases.jsf</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Filtro</filter-name>
+        <url-pattern>/</url-pattern>
     </filter-mapping>
     <filter>
         <filter-name>monitoring</filter-name>

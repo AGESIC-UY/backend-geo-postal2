@@ -86,7 +86,7 @@ public class CapasBackingBean implements Serializable {
         
         
     }
-
+  
     private void inicializarComboCriterioDeBusqueda() {
         criteriosDeBusquedaNumericos = new LinkedList<SelectItem>();
         criteriosDeBusquedaTexto = new LinkedList<SelectItem>();

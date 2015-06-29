@@ -225,6 +225,68 @@ public class DaoAnubis {
         }
     }
 
+    public static PGpoint transformCordinates(String latitud, String longitud, String sourceSRID, String destinationSRID) {
+    Connection conexion = getConnection();
+        try {
+            Double lat = new Double(latitud);
+            Double lon = new Double(longitud);
+            Integer source = new Integer(sourceSRID.split(":")[1]);
+            Integer destination = new Integer(destinationSRID.split(":")[1]);
+//            Double x = coordX * -1;
+//            Double y = coordY * -1;
+            //String consulta = "select st_transform(st_geomfromtext('POINT(-34.906388   -56.199722)',4326),32721)";
+            String consulta = "select st_transform(st_geomfromtext('POINT(" + lat + " " + lon + ")',"+source+")," + destination + ")";
+            PreparedStatement ps = conexion.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            PGpoint pg = null;
+            if (rs.next()) {
+                PGgeometry geom = (PGgeometry) rs.getObject(1);
+                org.postgis.Point p = geom.getGeometry().getFirstPoint();
+                pg = new PGpoint(p.x, p.y);
+            }
+            conexion.close();
+            return pg;
+        } catch (Exception ex) {
+            Logger.getLogger(DaoAnubis.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                conexion.close();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace();
+            }
+            return null;
+        }
+    
+    }
+
+    public static PGpoint getCoordenadasTransformadas4326(Double coordX, Double coordY, String srid) {
+        Connection conexion = getConnection();
+        try {
+            String srid_num = srid.split(":")[1];
+//            Double x = coordX * -1;
+//            Double y = coordY * -1;
+            //String consulta = "select st_transform(st_geomfromtext('POINT(-34.906388   -56.199722)',4326),32721)";
+            String consulta = "select st_transform(st_geomfromtext('POINT(" + coordX + " " + coordY + ")',4326)," + srid_num + ")";
+            PreparedStatement ps = conexion.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            PGpoint pg = null;
+            if (rs.next()) {
+                PGgeometry geom = (PGgeometry) rs.getObject(1);
+                org.postgis.Point p = geom.getGeometry().getFirstPoint();
+                pg = new PGpoint(p.x, p.y);
+            }
+            conexion.close();
+            return pg;
+        } catch (Exception ex) {
+            Logger.getLogger(DaoAnubis.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                conexion.close();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace();
+            }
+            return null;
+        }
+    }
+
     public static PGpoint getCoordenadasTransformadas(Double coordX, Double coordY, String srid) {
         Connection conexion = getConnection();
         try {

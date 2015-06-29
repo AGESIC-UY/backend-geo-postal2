@@ -134,7 +134,7 @@ public class ServiciosBean {
                 }
 
             }
-            String res = "{respuesta: [";
+            String res = "{\"respuesta\": [";
             boolean primero = true;
             if (!resultados.isEmpty()) {
                 for (String s : resultados) {
@@ -349,15 +349,15 @@ public class ServiciosBean {
         String html = "<html><h3 style='color:#384F8F; font-size: medium;'>Mensaje enviado a través de Geopostal</h3><h3 style='color:#384F8F; font-size: medium;'>Remitente</h3><p style='color:#4E4F5C;'>" + nombre + " (" + emailDest + ")</p><h3 style='color:#384F8F; font-size: medium'>Mensaje</h3><p style='color:#4E4F5C;'>" + mensaje + "</p><h3 style='color:#384F8F; font-size: medium'>Link a la vista en el mapa:</h3> <br/> <p style='color:#4E4F5C;'>" + link + "</p></html>";
 
         try {
-             SendEmail e = new SendEmail();
-             List<String> tos = new LinkedList<>();
-             tos.add("geomatica@correo.com.uy");
-            DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            Date d = new Date();
-            e.sendMail("[Geopostal] " + df.format(d) + "", html, tos, null, null, null, false);
-            //guardar datos contacto_visualizador
-            ContactoVisualizador c = new ContactoVisualizador(nombre, emailDest, mensaje, link, d, Boolean.FALSE);
-            HibernateDao.saveOrUpdate(c);
+//             SendEmail e = new SendEmail();
+//             List<String> tos = new LinkedList<>();
+//             tos.add("geomatica@correo.com.uy");
+//            DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+//            Date d = new Date();
+//            e.sendMail("[Geopostal] " + df.format(d) + "", html, tos, null, null, null, false);
+//            //guardar datos contacto_visualizador
+//            ContactoVisualizador c = new ContactoVisualizador(nombre, emailDest, mensaje, link, d, Boolean.FALSE);
+//            HibernateDao.saveOrUpdate(c);
             return "OK";
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -497,8 +497,7 @@ public class ServiciosBean {
                 }
                 GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
                 Gson gson = gsonBuilder.create();
-                salida += gson.toJson(p.getExteriorRing().getCoordinates());
-
+                salida += gson.toJson(p.getExteriorRing().getCoordinates()).replace("NaN", "\"NaN\"");
                 i++;
             }
 
@@ -506,7 +505,7 @@ public class ServiciosBean {
 
             GsonBuilder gsonBuilder = new GsonBuilder().serializeSpecialFloatingPointValues();
             Gson gson = gsonBuilder.create();
-            salida += gson.toJson(geometria.getCoordinates());
+            salida += gson.toJson(geometria.getCoordinates()).replace("NaN", "\"NaN\"");
         } else if (geometria instanceof Point) {
             Point pp = (Point) geometria;
             salida += "{\"x\":" + pp.getCoordinate().x + ",\"y\":" + pp.getCoordinate().y + "}";
@@ -554,6 +553,23 @@ public class ServiciosBean {
         String jsonRes = gson.toJson(perfil);
         System.out.println(jsonRes);
         return jsonRes;
+    }
+    
+    public String getcoordenadasTransformadas4326(){
+        String res = "";
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        Double coordX = Double.parseDouble(request.getParameter("coord_x"));
+        Double coordY = Double.parseDouble(request.getParameter("coord_y"));
+        String srid = (String) request.getParameter("srid");
+
+        PGpoint p = DaoAnubis.getCoordenadasTransformadas4326(coordX, coordY, srid);
+        if (p != null) {
+            res += "{\"error\": false, \"punto_x\": " + p.x + ", \"punto_y\": " + p.y + "}";
+        } else {
+            res += "{\"error\": true, \"mensaje\": 'Ocurrió un error al procesar el punto. Verifique que el Sistema de Referencia sea correcto.'}";
+        }
+        return res;
     }
 
     public String getcoordenadasTransformadas() {
@@ -668,6 +684,7 @@ public class ServiciosBean {
                 if (campo.getCriterioBusqueda().equals("Lista")) {
                     List<String> lista = DaoAnubis.getListadeValores(capaC.getTabla(), campoC.getNombreColumna());
                     String combo = "<select id='combo_" + capaC.getTabla() + "_" + campoC.getEtiqueta() + "'> <option value='null'>[Seleccione un valor]</option>";
+                    combo += "<option value='' selected disabled>" + campoC.getEtiqueta() + "</option>";
                     for (String l : lista) {
                         if (l != null) {
                             combo += "<option value='" + l + "'>" + l + "</option>";
